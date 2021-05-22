@@ -68,7 +68,7 @@ namespace KingdomManager
 
         public bool threadClose;
 
-        class BitmapData
+        class BitmapListData
         {
             Bitmap originalBitmap;
             int originalWidth;
@@ -79,7 +79,7 @@ namespace KingdomManager
             public int currentScreenWidth;
             public int currentScreenHeight;
 
-            public BitmapData(Bitmap bitmap, int width, int height)
+            public BitmapListData(Bitmap bitmap, int width, int height)
             {
                 originalBitmap = bitmap;
                 originalWidth = bitmap.Width;
@@ -103,7 +103,7 @@ namespace KingdomManager
             }
         }
 
-        Dictionary<string, BitmapData> bitmapList;
+        Dictionary<string, BitmapListData> bitmapList;
         Bitmap currentScreen;
         #endregion
 
@@ -118,7 +118,7 @@ namespace KingdomManager
             Unlink();
             isRunMacro = false;
             threadClose = false;
-            bitmapList = new Dictionary<string, BitmapData>();
+            bitmapList = new Dictionary<string, BitmapListData>();
 
             Thread thread = new Thread(() => Run());
             thread.Start();
@@ -138,7 +138,7 @@ namespace KingdomManager
             foreach (string fileName in files)
             {
                 Bitmap bmp = new Bitmap(fileName);
-                BitmapData data = new BitmapData(bmp, testerWidth, testerHeight);
+                BitmapListData data = new BitmapListData(bmp, testerWidth, testerHeight);
                 bitmapList.Add(fileName, data);
             }
             #endregion
@@ -159,24 +159,89 @@ namespace KingdomManager
         {
             while(isRunMacro)
             {
-                if (currentScreen != null)
-                    currentScreen.Dispose();
+                GetCurrentScreen();
 
-                currentScreen = PrintScreen();
-                RefreshSize(currentScreen.Width, currentScreen.Height);
+                Point? point = Find(currentScreen, "Icon_KingdomPass", 0.1);
+                if (point == null)
+                {
+                    PressKey(Keys.Escape);
+                    yield return new WaitForSeconds(1);
+                    continue;
+                }
+                // 메인화면 도착
+                point = Find(currentScreen, "Icon_Store", 0.3);
+                if (point == null)
+                {
+                    // 버그 발생 "Can't Find Store"
+                    yield return new WaitForSeconds(1f);
+                    continue;
+                }
+                TouchScreen(point.Value.X, point.Value.Y);
+                yield return new WaitForSeconds(1f);
 
-                Point? point = Find(currentScreen, "KingdomPass");
-                if(point == null)
+                Random random = new Random();
+                float adjustWidth = (float)linkedWidth / testerWidth;
+                float adjustHeight = (float)linkedHeight / testerHeight;
+
+                GetCurrentScreen();
+                point = Find(currentScreen, "Store_Axe", 0.5);
+                while (point == null)
+                {
+                    int randomHeight = random.Next(100, 550);
+                    int randomWidth = random.Next(200, 1000);
+                    Point from = new Point((int)Math.Round(adjustWidth * randomWidth), (int)Math.Round(adjustHeight * randomHeight));
+                    Point to = new Point((int)Math.Round(adjustWidth * randomWidth), (int)Math.Round(adjustHeight * (randomHeight - 300)));
+
+                    yield return Timer_Scroll(from.X, from.Y, to.X, to.Y, 0.5f);
+                    yield return new WaitForSeconds(1f);
+                    GetCurrentScreen();
+                    point = Find(currentScreen, "Store_Axe", 0.4);
+                }
+                TouchScreen(point.Value.X, point.Value.Y);
+                yield return new WaitForSeconds(1f);
+
+                GetCurrentScreen();
+                point = Find(currentScreen, "Info_Wood", 0.3);
+                while (point == null)
                 {
                     PressKey(Keys.Escape);
                     yield return new WaitForSeconds(1);
                     continue;
                 }
                 TouchScreen(point.Value.X, point.Value.Y);
-                yield return new WaitForSeconds(1);
+                yield return new WaitForSeconds(1f);
 
+                GetCurrentScreen();
+                point = Find(currentScreen, "Icon_Goto", 0.3);
+                while (point == null)
+                {
+                    PressKey(Keys.Escape);
+                    yield return new WaitForSeconds(1);
+                    continue;
+                }
+                TouchScreen(point.Value.X, point.Value.Y);
+                yield return new WaitForSeconds(2f);
 
-                // 현재 위치 파악
+                GetCurrentScreen();
+                point = Find(currentScreen, "Building_Wood", 0.3);
+                if (point == null)
+                {
+                    TouchScreen(currentScreen.Width / 2, currentScreen.Height / 2);
+                }
+                else
+                {
+                    TouchScreen(point.Value.X, point.Value.Y);
+                }
+                yield return new WaitForSeconds(1f);
+                yield return Timer_Previous();
+                yield return new WaitForSeconds(1f);
+
+                // 생산 시작!~
+                //yield return Timer_Produce(생산할 아이디);
+                //yield return new WaitForSeconds(1f);
+                //yield return Timer_Next();
+                //yield return new WaitForSeconds(1f);
+
                 // 고기젤리 확인
                 // 열기구 남은 시간 확인
                 // 열기구 보내기
@@ -393,7 +458,7 @@ namespace KingdomManager
                 startButton.Text = "실행";
                 isRunMacro = false;
                 linkButton.Enabled = true;
-                CoroutineManager.StopCoroutine(Timer_Start());
+                CoroutineManager.StopAllCoroutines();
             }
         }
 
@@ -431,6 +496,15 @@ namespace KingdomManager
             }
 
             return bmp;
+        }
+
+        public void GetCurrentScreen()
+        {
+            if (currentScreen != null)
+                currentScreen.Dispose();
+
+            currentScreen = PrintScreen();
+            RefreshSize(currentScreen.Width, currentScreen.Height);
         }
 
         public void TouchScreen(int x, int y, float duration = 0f)
@@ -534,7 +608,7 @@ namespace KingdomManager
             return destImage;
         }
 
-        private Point? Find(Bitmap sourceBitmap, string keyword)
+        private Point? Find(Bitmap sourceBitmap, string keyword, double tolerance = 0.5)
         {
             if (IsLinkValid() == false)
                 return null;
@@ -560,89 +634,91 @@ namespace KingdomManager
                 return null;
             }
 
-            var pixelFormatSize = Image.GetPixelFormatSize(sourceBitmap.PixelFormat) / 8;
+            BitmapData smallData = searchingBitmap.LockBits(new Rectangle(0, 0, searchingBitmap.Width, searchingBitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData bigData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
+            int smallStride = smallData.Stride;
+            int bigStride = bigData.Stride;
 
-            // Copy sourceBitmap to byte array
-            var sourceBitmapData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height),
-                ImageLockMode.ReadOnly, sourceBitmap.PixelFormat);
-            var sourceBitmapBytesLength = sourceBitmapData.Stride * sourceBitmap.Height;
-            var sourceBytes = new byte[sourceBitmapBytesLength];
-            Marshal.Copy(sourceBitmapData.Scan0, sourceBytes, 0, sourceBitmapBytesLength);
-            sourceBitmap.UnlockBits(sourceBitmapData);
+            int bigWidth = sourceBitmap.Width;
+            int bigHeight = sourceBitmap.Height - searchingBitmap.Height + 1;
+            int smallWidth = searchingBitmap.Width * 3;
+            int smallHeight = searchingBitmap.Height;
+            
+            int margin = Convert.ToInt32(255.0 * tolerance);
 
-            // Copy serchingBitmap to byte array
-            var serchingBitmapData =
-                searchingBitmap.LockBits(new Rectangle(0, 0, searchingBitmap.Width, searchingBitmap.Height),
-                    ImageLockMode.ReadOnly, searchingBitmap.PixelFormat);
-            var serchingBitmapBytesLength = serchingBitmapData.Stride * searchingBitmap.Height;
-            var serchingBytes = new byte[serchingBitmapBytesLength];
-            Marshal.Copy(serchingBitmapData.Scan0, serchingBytes, 0, serchingBitmapBytesLength);
-            searchingBitmap.UnlockBits(serchingBitmapData);
-
-            var pointsList = new List<Point>();
-
-            // Serching entries
-            // minimazing serching zone
-            // sourceBitmap.Height - serchingBitmap.Height + 1
-            for (var mainY = 0; mainY < sourceBitmap.Height - searchingBitmap.Height + 1; mainY++)
+            unsafe
             {
-                var sourceY = mainY * sourceBitmapData.Stride;
+                byte* pSmall = (byte*)(void*)smallData.Scan0;
+                byte* pBig = (byte*)(void*)bigData.Scan0;
 
-                for (var mainX = 0; mainX < sourceBitmap.Width - searchingBitmap.Width + 1; mainX++)
-                {// mainY & mainX - pixel coordinates of sourceBitmap
-                 // sourceY + sourceX = pointer in array sourceBitmap bytes
-                    var sourceX = mainX * pixelFormatSize;
+                int smallOffset = smallStride - searchingBitmap.Width * 3;
+                int bigOffset = bigStride - sourceBitmap.Width * 3;
 
-                    var isEqual = true;
-                    for (var c = 0; c < pixelFormatSize; c++)
-                    {// through the bytes in pixel
-                        if (sourceBytes[sourceX + sourceY + c] == serchingBytes[c])
-                            continue;
-                        isEqual = false;
-                        break;
-                    }
+                bool matchFound = true;
 
-                    if (!isEqual) continue;
-
-                    var isStop = false;
-
-                    // find fist equalation and now we go deeper) 
-                    for (var secY = 0; secY < searchingBitmap.Height; secY++)
+                for (int y = 0; y < bigHeight; y++)
+                {
+                    for (int x = 0; x < bigWidth; x++)
                     {
-                        var serchY = secY * serchingBitmapData.Stride;
+                        byte* pBigBackup = pBig;
+                        byte* pSmallBackup = pSmall;
 
-                        var sourceSecY = (mainY + secY) * sourceBitmapData.Stride;
+                        //Look for the small picture.
+                        for (int i = 0; i < smallHeight; i++)
+                        {
+                            int j = 0;
+                            matchFound = true;
+                            for (j = 0; j < smallWidth; j++)
+                            {
+                                //With tolerance: pSmall value should be between margins.
+                                int inf = pBig[0] - margin;
+                                int sup = pBig[0] + margin;
+                                if (sup < pSmall[0] || inf > pSmall[0])
+                                {
+                                    matchFound = false;
+                                    break;
+                                }
 
-                        for (var secX = 0; secX < searchingBitmap.Width; secX++)
-                        {// secX & secY - coordinates of serchingBitmap
-                         // serchX + serchY = pointer in array serchingBitmap bytes
-
-                            var serchX = secX * pixelFormatSize;
-
-                            var sourceSecX = (mainX + secX) * pixelFormatSize;
-
-                            for (var c = 0; c < pixelFormatSize; c++)
-                            {// through the bytes in pixel
-                                if (sourceBytes[sourceSecX + sourceSecY + c] == serchingBytes[serchX + serchY + c]) continue;
-
-                                // not equal - abort iteration
-                                isStop = true;
-                                break;
+                                pBig++;
+                                pSmall++;
                             }
 
-                            if (isStop) break;
+                            if (!matchFound) break;
+
+                            //We restore the pointers.
+                            pSmall = pSmallBackup;
+                            pBig = pBigBackup;
+
+                            //Next rows of the small and big pictures.
+                            pSmall += smallStride * (1 + i);
+                            pBig += bigStride * (1 + i);
                         }
 
-                        if (isStop) break;
+                        //If match found, we return.
+                        if (matchFound)
+                        {
+                            sourceBitmap.UnlockBits(bigData);
+                            searchingBitmap.UnlockBits(smallData);
+                            return new Point(x, y);
+                        }
+                        //If no match found, we restore the pointers and continue.
+                        else
+                        {
+                            pBig = pBigBackup;
+                            pSmall = pSmallBackup;
+                            pBig += 3;
+                        }
                     }
 
-                    if (!isStop)
-                    {// serching bitmap is founded!!
-                        return new Point(mainX, mainY);
-                    }
+                    if (matchFound) break;
+
+                    pBig += bigOffset;
                 }
             }
+
+            sourceBitmap.UnlockBits(bigData);
+            searchingBitmap.UnlockBits(smallData);
 
             return null;
         }
