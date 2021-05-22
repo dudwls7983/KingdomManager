@@ -28,27 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.linkButton = new System.Windows.Forms.Button();
             this.appPlayerList = new System.Windows.Forms.ComboBox();
             this.targetList = new System.Windows.Forms.ComboBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.mainTab = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.label1 = new System.Windows.Forms.Label();
+            this.produceTab = new System.Windows.Forms.TabPage();
+            this.developTab = new System.Windows.Forms.TabPage();
+            this.devRefreshButton = new System.Windows.Forms.Button();
+            this.devRichBox = new System.Windows.Forms.RichTextBox();
+            this.devPictureBox = new System.Windows.Forms.PictureBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.testButton = new System.Windows.Forms.Button();
+            this.tabControl.SuspendLayout();
+            this.mainTab.SuspendLayout();
+            this.developTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.devPictureBox)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(561, 32);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(800, 450);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // linkButton
             // 
@@ -79,50 +77,32 @@
             this.targetList.Size = new System.Drawing.Size(100, 20);
             this.targetList.TabIndex = 5;
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1560, 837);
-            this.tabControl1.TabIndex = 6;
+            this.tabControl.Controls.Add(this.mainTab);
+            this.tabControl.Controls.Add(this.produceTab);
+            this.tabControl.Controls.Add(this.developTab);
+            this.tabControl.Controls.Add(this.tabPage1);
+            this.tabControl.Location = new System.Drawing.Point(12, 12);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(1560, 837);
+            this.tabControl.TabIndex = 6;
             // 
-            // tabPage1
+            // mainTab
             // 
-            this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Controls.Add(this.appPlayerList);
-            this.tabPage1.Controls.Add(this.pictureBox1);
-            this.tabPage1.Controls.Add(this.linkButton);
-            this.tabPage1.Controls.Add(this.targetList);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1552, 811);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "일반";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1552, 811);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "생산";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 12);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "앱플레이어";
+            this.mainTab.Controls.Add(this.label2);
+            this.mainTab.Controls.Add(this.label1);
+            this.mainTab.Controls.Add(this.appPlayerList);
+            this.mainTab.Controls.Add(this.linkButton);
+            this.mainTab.Controls.Add(this.targetList);
+            this.mainTab.Location = new System.Drawing.Point(4, 22);
+            this.mainTab.Name = "mainTab";
+            this.mainTab.Padding = new System.Windows.Forms.Padding(3);
+            this.mainTab.Size = new System.Drawing.Size(1552, 811);
+            this.mainTab.TabIndex = 0;
+            this.mainTab.Text = "일반";
+            this.mainTab.UseVisualStyleBackColor = true;
             // 
             // label2
             // 
@@ -133,33 +113,119 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "타겟";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 12);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "앱플레이어";
+            // 
+            // produceTab
+            // 
+            this.produceTab.Location = new System.Drawing.Point(4, 22);
+            this.produceTab.Name = "produceTab";
+            this.produceTab.Padding = new System.Windows.Forms.Padding(3);
+            this.produceTab.Size = new System.Drawing.Size(1552, 811);
+            this.produceTab.TabIndex = 1;
+            this.produceTab.Text = "생산";
+            this.produceTab.UseVisualStyleBackColor = true;
+            // 
+            // developTab
+            // 
+            this.developTab.Controls.Add(this.testButton);
+            this.developTab.Controls.Add(this.devRefreshButton);
+            this.developTab.Controls.Add(this.devRichBox);
+            this.developTab.Controls.Add(this.devPictureBox);
+            this.developTab.Location = new System.Drawing.Point(4, 22);
+            this.developTab.Name = "developTab";
+            this.developTab.Padding = new System.Windows.Forms.Padding(3);
+            this.developTab.Size = new System.Drawing.Size(1552, 811);
+            this.developTab.TabIndex = 2;
+            this.developTab.Text = "개발자메뉴";
+            this.developTab.UseVisualStyleBackColor = true;
+            // 
+            // devRefreshButton
+            // 
+            this.devRefreshButton.Font = new System.Drawing.Font("굴림", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.devRefreshButton.Location = new System.Drawing.Point(6, 166);
+            this.devRefreshButton.Name = "devRefreshButton";
+            this.devRefreshButton.Size = new System.Drawing.Size(150, 69);
+            this.devRefreshButton.TabIndex = 3;
+            this.devRefreshButton.Text = "갱신";
+            this.devRefreshButton.UseVisualStyleBackColor = true;
+            this.devRefreshButton.Click += new System.EventHandler(this.OnDevRefreshButtonClicked);
+            // 
+            // devRichBox
+            // 
+            this.devRichBox.Location = new System.Drawing.Point(6, 6);
+            this.devRichBox.Name = "devRichBox";
+            this.devRichBox.ReadOnly = true;
+            this.devRichBox.Size = new System.Drawing.Size(150, 154);
+            this.devRichBox.TabIndex = 2;
+            this.devRichBox.Text = "";
+            // 
+            // devPictureBox
+            // 
+            this.devPictureBox.Location = new System.Drawing.Point(162, 3);
+            this.devPictureBox.Name = "devPictureBox";
+            this.devPictureBox.Size = new System.Drawing.Size(800, 450);
+            this.devPictureBox.TabIndex = 1;
+            this.devPictureBox.TabStop = false;
+            this.devPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnDevPictureBoxClicked);
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(1552, 811);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // testButton
+            // 
+            this.testButton.Location = new System.Drawing.Point(6, 241);
+            this.testButton.Name = "testButton";
+            this.testButton.Size = new System.Drawing.Size(150, 39);
+            this.testButton.TabIndex = 4;
+            this.testButton.Text = "TestButton";
+            this.testButton.UseVisualStyleBackColor = true;
+            this.testButton.Click += new System.EventHandler(this.OnTestButtonClicked);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1584, 861);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl);
             this.Name = "Main";
             this.Text = "KingdomManager";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.mainTab.ResumeLayout(false);
+            this.mainTab.PerformLayout();
+            this.developTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.devPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button linkButton;
         private System.Windows.Forms.ComboBox appPlayerList;
         private System.Windows.Forms.ComboBox targetList;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage mainTab;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage produceTab;
+        private System.Windows.Forms.TabPage developTab;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.Button devRefreshButton;
+        private System.Windows.Forms.RichTextBox devRichBox;
+        private System.Windows.Forms.PictureBox devPictureBox;
+        private System.Windows.Forms.Button testButton;
     }
 }
 
