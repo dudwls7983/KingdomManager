@@ -33,6 +33,7 @@
             this.targetList = new System.Windows.Forms.ComboBox();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.mainTab = new System.Windows.Forms.TabPage();
+            this.startButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.produceTab = new System.Windows.Forms.TabPage();
@@ -91,6 +92,7 @@
             // 
             // mainTab
             // 
+            this.mainTab.Controls.Add(this.startButton);
             this.mainTab.Controls.Add(this.label2);
             this.mainTab.Controls.Add(this.label1);
             this.mainTab.Controls.Add(this.appPlayerList);
@@ -103,6 +105,17 @@
             this.mainTab.TabIndex = 0;
             this.mainTab.Text = "일반";
             this.mainTab.UseVisualStyleBackColor = true;
+            // 
+            // startButton
+            // 
+            this.startButton.Enabled = false;
+            this.startButton.Location = new System.Drawing.Point(6, 87);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(217, 87);
+            this.startButton.TabIndex = 8;
+            this.startButton.Text = "실행";
+            this.startButton.UseVisualStyleBackColor = true;
+            this.startButton.Click += new System.EventHandler(this.OnStartButtonClicked);
             // 
             // label2
             // 
@@ -227,6 +240,7 @@
         private System.Windows.Forms.RichTextBox devRichBox;
         private System.Windows.Forms.PictureBox devPictureBox;
         private System.Windows.Forms.Button testButton;
+        private System.Windows.Forms.Button startButton;
     }
 }
 

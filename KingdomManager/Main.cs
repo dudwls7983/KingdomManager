@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
+using System.Drawing.Imaging;
 
 namespace KingdomManager
 {
@@ -35,10 +36,15 @@ namespace KingdomManager
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool PostMessage(IntPtr hWnd, uint msg, int wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
+        public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
         #endregion
 
 
         #region const & readonly Variables
+        public const int WM_KEYDOWN = 0x100;
+        public const int WM_KEYUP = 0x101;
         public const int WM_LBUTTONMOVE = 0x200;
         public const int WM_LBUTTONDOWN = 0x201;
         public const int WM_LBUTTONUP = 0x202;
@@ -58,7 +64,47 @@ namespace KingdomManager
         public int linkedWidth;
         public int linkedHeight;
 
+        public bool isRunMacro;
+
         public bool threadClose;
+
+        class BitmapData
+        {
+            Bitmap originalBitmap;
+            int originalWidth;
+            int originalHeight;
+            int screenWidth;
+            int screenHeight;
+            public Bitmap resultBitmap;
+            public int currentScreenWidth;
+            public int currentScreenHeight;
+
+            public BitmapData(Bitmap bitmap, int width, int height)
+            {
+                originalBitmap = bitmap;
+                originalWidth = bitmap.Width;
+                originalHeight = bitmap.Height;
+                screenWidth = width;
+                screenHeight = height;
+                Resize(width, height);
+            }
+
+            public void Resize(int currentWidth, int currentHeight)
+            {
+                if (resultBitmap != null)
+                    resultBitmap.Dispose();
+
+                float resizeWidth = (float)currentWidth / screenWidth;
+                float resizeHeight = (float)currentHeight / screenHeight;
+
+                resultBitmap = ResizeImage(originalBitmap, (int)Math.Round(originalWidth * resizeWidth), (int)Math.Round(originalHeight * resizeHeight));
+                currentScreenWidth = currentWidth;
+                currentScreenHeight = currentHeight;
+            }
+        }
+
+        Dictionary<string, BitmapData> bitmapList;
+        Bitmap currentScreen;
         #endregion
 
         public Main()
@@ -70,7 +116,9 @@ namespace KingdomManager
             tabControl.TabPages.Remove(developTab);
             #endif
             Unlink();
+            isRunMacro = false;
             threadClose = false;
+            bitmapList = new Dictionary<string, BitmapData>();
 
             Thread thread = new Thread(() => Run());
             thread.Start();
@@ -84,17 +132,62 @@ namespace KingdomManager
 
             appPlayerList.SelectedIndex = 0;
             #endregion
-        }
 
-        #region 타이머(코루틴)
+            #region 이미지 리스트 추가
+            string[] files = System.IO.Directory.GetFiles("img", "*.png");
+            foreach (string fileName in files)
+            {
+                Bitmap bmp = new Bitmap(fileName);
+                BitmapData data = new BitmapData(bmp, testerWidth, testerHeight);
+                bitmapList.Add(fileName, data);
+            }
+            #endregion
+        }
         public void Run()
         {
-            while(threadClose == false)
+            while (threadClose == false)
             {
-                if(CoroutineManager.Runnings() > 0)
+                if (CoroutineManager.Runnings() > 0)
                 {
                     CoroutineManager.Update();
                 }
+            }
+        }
+
+        #region 타이머(코루틴)
+        IEnumerator Timer_Start()
+        {
+            while(isRunMacro)
+            {
+                if (currentScreen != null)
+                    currentScreen.Dispose();
+
+                currentScreen = PrintScreen();
+                RefreshSize(currentScreen.Width, currentScreen.Height);
+
+                Point? point = Find(currentScreen, "KingdomPass");
+                if(point == null)
+                {
+                    PressKey(Keys.Escape);
+                    yield return new WaitForSeconds(1);
+                    continue;
+                }
+                TouchScreen(point.Value.X, point.Value.Y);
+                yield return new WaitForSeconds(1);
+
+
+                // 현재 위치 파악
+                // 고기젤리 확인
+                // 열기구 남은 시간 확인
+                // 열기구 보내기
+                // 열차 확인
+                // 열차 보내기
+
+                // 생산 시작
+
+                // 납품 시작
+
+                // 월드탐험 시작
             }
         }
 
@@ -172,17 +265,66 @@ namespace KingdomManager
             int y = (int)Math.Round(adjustHeight * random.Next(min[moduloID].Y, max[moduloID].Y));
             yield return Timer_Touch(x, y, 0.5f);
         }
+
+        IEnumerator Timer_Previous()
+        {
+            if (IsLinkValid() == false)
+                yield break;
+
+
+            Random random = new Random();
+            float adjustWidth = (float)linkedWidth / testerWidth;
+            float adjustHeight = (float)linkedHeight / testerHeight;
+
+
+            Point min = new Point(210, 324);
+            Point max = new Point(242, 377);
+
+            int x = (int)Math.Round(adjustWidth * random.Next(min.X, max.X));
+            int y = (int)Math.Round(adjustHeight * random.Next(min.Y, max.Y));
+            yield return Timer_Touch(x, y);
+        }
+
+        IEnumerator Timer_Next()
+        {
+            if (IsLinkValid() == false)
+                yield break;
+
+
+            Random random = new Random();
+            float adjustWidth = (float)linkedWidth / testerWidth;
+            float adjustHeight = (float)linkedHeight / testerHeight;
+
+
+            Point min = new Point(657, 324);
+            Point max = new Point(689, 377);
+
+            int x = (int)Math.Round(adjustWidth * random.Next(min.X, max.X));
+            int y = (int)Math.Round(adjustHeight * random.Next(min.Y, max.Y));
+            yield return Timer_Touch(x, y);
+        }
         #endregion
 
         #region 이벤트 Listner
         private void OnLinkButtonClicked(object sender, EventArgs e)
         {
             if (isLinked)
+            {
+                linkButton.Text = "링크";
                 Unlink();
+                startButton.Enabled = false;
+                appPlayerList.Enabled = true;
+                targetList.Enabled = true;
+            }
             else
             {
                 if (Link() == false)
                     return;
+
+                linkButton.Text = "링크해제";
+                startButton.Enabled = true;
+                appPlayerList.Enabled = false;
+                targetList.Enabled = false;
             }
         }
 
@@ -237,6 +379,24 @@ namespace KingdomManager
             threadClose = true;
         }
 
+        private void OnStartButtonClicked(object sender, EventArgs e)
+        {
+            if(isRunMacro == false)
+            {
+                startButton.Text = "중지";
+                isRunMacro = true;
+                linkButton.Enabled = false;
+                CoroutineManager.StartCoroutine(Timer_Start());
+            }
+            else
+            {
+                startButton.Text = "실행";
+                isRunMacro = false;
+                linkButton.Enabled = true;
+                CoroutineManager.StopCoroutine(Timer_Start());
+            }
+        }
+
         private void OnTestButtonClicked(object sender, EventArgs e)
         {
             CKP_Produce(5);
@@ -280,6 +440,15 @@ namespace KingdomManager
 
             CoroutineManager.StartCoroutine(Timer_Touch(x, y, duration));
         }
+
+        public void PressKey(Keys key)
+        {
+            if (IsLinkValid() == false)
+                return;
+
+            SendMessage(linkedHandle, WM_KEYDOWN, Convert.ToInt32(key), IntPtr.Zero);
+            SendMessage(linkedHandle, WM_KEYUP, Convert.ToInt32(key), IntPtr.Zero);
+        }
         #endregion
 
         #region Private Functions
@@ -312,7 +481,7 @@ namespace KingdomManager
             linkedHandle = IntPtr.Zero;
         }
 
-        public void RefreshSize()
+        private void RefreshSize()
         {
             Graphics graphics = Graphics.FromHwnd(linkedHandle);
             if (graphics == null)
@@ -322,9 +491,160 @@ namespace KingdomManager
             linkedHeight = (int)Math.Round(graphics.VisibleClipBounds.Height);
         }
 
+        private void RefreshSize(int width, int height)
+        {
+            linkedWidth = width;
+            linkedHeight = height;
+        }
+
         private IntPtr CreateLParam(int LoWord, int HiWord)
         {
             return (IntPtr)((HiWord << 16) | (LoWord & 0xffff));
+        }
+        
+        /// <summary>
+         /// Resize the image to the specified width and height.
+         /// </summary>
+         /// <param name="image">The image to resize.</param>
+         /// <param name="width">The width to resize to.</param>
+         /// <param name="height">The height to resize to.</param>
+         /// <returns>The resized image.</returns>
+        private static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new System.Drawing.Imaging.ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
+        private Point? Find(Bitmap sourceBitmap, string keyword)
+        {
+            if (IsLinkValid() == false)
+                return null;
+
+            keyword = @"img\" + keyword + ".png";
+            var data = bitmapList[keyword];
+            if (data == null)
+                return null;
+
+            if (data.currentScreenWidth != linkedWidth || data.currentScreenHeight != linkedHeight)
+            {
+                data.Resize(linkedWidth, linkedHeight);
+            }
+
+            var searchingBitmap = data.resultBitmap;
+
+            if (null == sourceBitmap || null == searchingBitmap)
+            {
+                return null;
+            }
+            if (sourceBitmap.Width < searchingBitmap.Width || sourceBitmap.Height < searchingBitmap.Height)
+            {
+                return null;
+            }
+
+            var pixelFormatSize = Image.GetPixelFormatSize(sourceBitmap.PixelFormat) / 8;
+
+
+            // Copy sourceBitmap to byte array
+            var sourceBitmapData = sourceBitmap.LockBits(new Rectangle(0, 0, sourceBitmap.Width, sourceBitmap.Height),
+                ImageLockMode.ReadOnly, sourceBitmap.PixelFormat);
+            var sourceBitmapBytesLength = sourceBitmapData.Stride * sourceBitmap.Height;
+            var sourceBytes = new byte[sourceBitmapBytesLength];
+            Marshal.Copy(sourceBitmapData.Scan0, sourceBytes, 0, sourceBitmapBytesLength);
+            sourceBitmap.UnlockBits(sourceBitmapData);
+
+            // Copy serchingBitmap to byte array
+            var serchingBitmapData =
+                searchingBitmap.LockBits(new Rectangle(0, 0, searchingBitmap.Width, searchingBitmap.Height),
+                    ImageLockMode.ReadOnly, searchingBitmap.PixelFormat);
+            var serchingBitmapBytesLength = serchingBitmapData.Stride * searchingBitmap.Height;
+            var serchingBytes = new byte[serchingBitmapBytesLength];
+            Marshal.Copy(serchingBitmapData.Scan0, serchingBytes, 0, serchingBitmapBytesLength);
+            searchingBitmap.UnlockBits(serchingBitmapData);
+
+            var pointsList = new List<Point>();
+
+            // Serching entries
+            // minimazing serching zone
+            // sourceBitmap.Height - serchingBitmap.Height + 1
+            for (var mainY = 0; mainY < sourceBitmap.Height - searchingBitmap.Height + 1; mainY++)
+            {
+                var sourceY = mainY * sourceBitmapData.Stride;
+
+                for (var mainX = 0; mainX < sourceBitmap.Width - searchingBitmap.Width + 1; mainX++)
+                {// mainY & mainX - pixel coordinates of sourceBitmap
+                 // sourceY + sourceX = pointer in array sourceBitmap bytes
+                    var sourceX = mainX * pixelFormatSize;
+
+                    var isEqual = true;
+                    for (var c = 0; c < pixelFormatSize; c++)
+                    {// through the bytes in pixel
+                        if (sourceBytes[sourceX + sourceY + c] == serchingBytes[c])
+                            continue;
+                        isEqual = false;
+                        break;
+                    }
+
+                    if (!isEqual) continue;
+
+                    var isStop = false;
+
+                    // find fist equalation and now we go deeper) 
+                    for (var secY = 0; secY < searchingBitmap.Height; secY++)
+                    {
+                        var serchY = secY * serchingBitmapData.Stride;
+
+                        var sourceSecY = (mainY + secY) * sourceBitmapData.Stride;
+
+                        for (var secX = 0; secX < searchingBitmap.Width; secX++)
+                        {// secX & secY - coordinates of serchingBitmap
+                         // serchX + serchY = pointer in array serchingBitmap bytes
+
+                            var serchX = secX * pixelFormatSize;
+
+                            var sourceSecX = (mainX + secX) * pixelFormatSize;
+
+                            for (var c = 0; c < pixelFormatSize; c++)
+                            {// through the bytes in pixel
+                                if (sourceBytes[sourceSecX + sourceSecY + c] == serchingBytes[serchX + serchY + c]) continue;
+
+                                // not equal - abort iteration
+                                isStop = true;
+                                break;
+                            }
+
+                            if (isStop) break;
+                        }
+
+                        if (isStop) break;
+                    }
+
+                    if (!isStop)
+                    {// serching bitmap is founded!!
+                        return new Point(mainX, mainY);
+                    }
+                }
+            }
+
+            return null;
         }
         #endregion
 
@@ -336,6 +656,16 @@ namespace KingdomManager
         private void CKP_Produce(int id)
         {
             CoroutineManager.StartCoroutine(Timer_Produce(id));
+        }
+
+        private void CKP_PreviousBuilding()
+        {
+            CoroutineManager.StartCoroutine(Timer_Previous());
+        }
+
+        private void CKP_NextBuilding()
+        {
+            CoroutineManager.StartCoroutine(Timer_Next());
         }
         #endregion
     }
