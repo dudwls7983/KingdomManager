@@ -49,6 +49,9 @@ namespace KingdomManager
 
         private static bool Process(IEnumerator routine)
         {
+            if (routine == null)
+                return false;
+
             do
             {
                 object current = routine.Current;

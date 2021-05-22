@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Threading;
 
 namespace KingdomManager
 {
@@ -55,10 +56,13 @@ namespace KingdomManager
             InitializeComponent();
 
             #region Initialize
-#if DEBUG == false
+            #if DEBUG == false
             tabControl.TabPages.Remove(developTab);
-#endif
+            #endif
             Unlink();
+
+            Thread thread = new Thread(() => Run());
+            thread.Start();
 #endregion
 
             #region 앱플레이어 리스트 추가
@@ -72,13 +76,21 @@ namespace KingdomManager
         }
 
         #region 타이머(코루틴)
+        public void Run()
+        {
+            while(true)
+            {
+                if(CoroutineManager.Runnings() > 0)
+                {
+                    CoroutineManager.Update();
+                }
+            }
+        }
+
         IEnumerator Timer_TouchEnd(float seconds, IntPtr param)
         {
-            devRichBox.Text += Environment.NewLine + "Coroutine Started";
             yield return new WaitForSeconds(seconds);
-            devRichBox.Text += Environment.NewLine + seconds + "seconds Waited.";
             TouchEnd(param);
-            devRichBox.Text += Environment.NewLine + "Touch Ended";
             yield return null;
         }
         #endregion
@@ -189,10 +201,7 @@ namespace KingdomManager
             }
             else
             {
-                devRichBox.Text = "StartCoroutine";
                 CoroutineManager.StartCoroutine(Timer_TouchEnd(duration, param));
-                while (CoroutineManager.Runnings() > 0)
-                    CoroutineManager.Update();
             }
         }
 
@@ -248,8 +257,12 @@ namespace KingdomManager
             float adjustWidth = (float)linkedWidth / testerWidth;
             float adjustHeight = (float)linkedHeight / testerHeight;
 
+            Point min1 = new Point(949, 221);
+            Point max1 = new Point(1211, 253);
             Point min2 = new Point(946, 430);
             Point max2 = new Point(1210, 467);
+            Point min3 = new Point(950, 648);
+            Point max3 = new Point(1210, 681);
 
             Random random = new Random();
 
@@ -260,7 +273,7 @@ namespace KingdomManager
                 case 2:
                     int x = (int)Math.Round(adjustWidth * random.Next(min2.X, max2.X));
                     int y = (int)Math.Round(adjustHeight * random.Next(min2.Y, max2.Y));
-                    TouchScreen(x, y, 1);
+                    TouchScreen(x, y, 5);
                     break;
                 case 3:
                     break;
