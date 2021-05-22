@@ -37,11 +37,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.produceTab = new System.Windows.Forms.TabPage();
             this.developTab = new System.Windows.Forms.TabPage();
+            this.testButton = new System.Windows.Forms.Button();
             this.devRefreshButton = new System.Windows.Forms.Button();
             this.devRichBox = new System.Windows.Forms.RichTextBox();
             this.devPictureBox = new System.Windows.Forms.PictureBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.testButton = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.mainTab.SuspendLayout();
             this.developTab.SuspendLayout();
@@ -146,6 +146,16 @@
             this.developTab.Text = "개발자메뉴";
             this.developTab.UseVisualStyleBackColor = true;
             // 
+            // testButton
+            // 
+            this.testButton.Location = new System.Drawing.Point(6, 241);
+            this.testButton.Name = "testButton";
+            this.testButton.Size = new System.Drawing.Size(150, 39);
+            this.testButton.TabIndex = 4;
+            this.testButton.Text = "TestButton";
+            this.testButton.UseVisualStyleBackColor = true;
+            this.testButton.Click += new System.EventHandler(this.OnTestButtonClicked);
+            // 
             // devRefreshButton
             // 
             this.devRefreshButton.Font = new System.Drawing.Font("굴림", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
@@ -184,16 +194,6 @@
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // testButton
-            // 
-            this.testButton.Location = new System.Drawing.Point(6, 241);
-            this.testButton.Name = "testButton";
-            this.testButton.Size = new System.Drawing.Size(150, 39);
-            this.testButton.TabIndex = 4;
-            this.testButton.Text = "TestButton";
-            this.testButton.UseVisualStyleBackColor = true;
-            this.testButton.Click += new System.EventHandler(this.OnTestButtonClicked);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -202,6 +202,7 @@
             this.Controls.Add(this.tabControl);
             this.Name = "Main";
             this.Text = "KingdomManager";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnApplicationClosing);
             this.tabControl.ResumeLayout(false);
             this.mainTab.ResumeLayout(false);
             this.mainTab.PerformLayout();

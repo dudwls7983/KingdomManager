@@ -30,14 +30,22 @@ namespace KingdomManager
         internal static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcblt, int nFlags);
 
         // 핸들에 메시지를 전달하는 함수
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        [DllImport("user32.dll")]
         public static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern bool PostMessage(IntPtr hWnd, uint msg, int wParam, IntPtr lParam);
         #endregion
 
 
         #region const & readonly Variables
+        public const int WM_LBUTTONMOVE = 0x200;
         public const int WM_LBUTTONDOWN = 0x201;
         public const int WM_LBUTTONUP = 0x202;
+        public const int WM_MOUSEWHEEL = 0x20A;
+
+        const int testerWidth = 1280;
+        const int testerHeight = 720;
 
         readonly string[,] programList = { //{"ComboBox에 보여줄 이름", "프로세스 이름", "윈도우핸들이름", "윈도우핸들클래스" }, 
             {"LD플레이어", "dnplayer", "RenderWindow", "TheRender" }
@@ -49,6 +57,8 @@ namespace KingdomManager
         public IntPtr linkedHandle;
         public int linkedWidth;
         public int linkedHeight;
+
+        public bool threadClose;
         #endregion
 
         public Main()
@@ -60,6 +70,7 @@ namespace KingdomManager
             tabControl.TabPages.Remove(developTab);
             #endif
             Unlink();
+            threadClose = false;
 
             Thread thread = new Thread(() => Run());
             thread.Start();
@@ -78,7 +89,7 @@ namespace KingdomManager
         #region 타이머(코루틴)
         public void Run()
         {
-            while(true)
+            while(threadClose == false)
             {
                 if(CoroutineManager.Runnings() > 0)
                 {
@@ -87,11 +98,79 @@ namespace KingdomManager
             }
         }
 
-        IEnumerator Timer_TouchEnd(float seconds, IntPtr param)
+        IEnumerator Timer_Touch(int x, int y, float duration = 0f)
         {
-            yield return new WaitForSeconds(seconds);
-            TouchEnd(param);
-            yield return null;
+            if (IsLinkValid() == false)
+                yield break;
+
+            RefreshSize();
+
+            PostMessage(linkedHandle, WM_LBUTTONDOWN, 1, CreateLParam(x, y));
+            yield return new WaitForSeconds(duration);
+            PostMessage(linkedHandle, WM_LBUTTONUP, 0, CreateLParam(x, y));
+        }
+
+        IEnumerator Timer_Scroll(int x, int y, int toX, int toY, float duration = 0f)
+        {
+            if (IsLinkValid() == false)
+                yield break;
+
+            RefreshSize();
+
+            Random random = new Random();
+
+            PostMessage(linkedHandle, WM_LBUTTONDOWN, 1, CreateLParam(toX, y));
+
+            for (int i = 1; i <= 4; i++)
+            {
+                float t = (float)i / 4;
+                yield return new WaitForSeconds(0.05f);
+                SendMessage(linkedHandle, WM_LBUTTONMOVE, 1, CreateLParam(toX, (int)Math.Round((1f - t) * y + t * toY)));
+            }
+            SendMessage(linkedHandle, WM_LBUTTONDOWN, 1, CreateLParam(toX, toY));
+            yield return new WaitForSeconds(duration);
+
+            PostMessage(linkedHandle, WM_LBUTTONUP, 0, CreateLParam(toX, toY));
+        }
+
+        IEnumerator Timer_Produce(int id)
+        {
+            if (IsLinkValid() == false)
+                yield break;
+
+            id--;
+            int scrollCount = id / 3;
+
+            Random random = new Random();
+            float adjustWidth = (float)linkedWidth / testerWidth;
+            float adjustHeight = (float)linkedHeight / testerHeight;
+
+            for (int i = 0; i < scrollCount; i++)
+            {
+                int randomHeight = random.Next(80, 700);
+                int randomWidth = random.Next(770, 1240);
+                Point from = new Point((int)Math.Round(adjustWidth * randomWidth), (int)Math.Round(adjustHeight * randomHeight));
+                Point to = new Point((int)Math.Round(adjustWidth * randomWidth), (int)Math.Round(adjustHeight * (randomHeight - 855)));
+
+                yield return Timer_Scroll(from.X, from.Y, to.X, to.Y, 0.5f);
+                yield return new WaitForSeconds(0.5f);
+            }
+            int moduloID = id % 3;
+
+            Point[] min = {
+                new Point(949, 221),
+                new Point(946, 430),
+                new Point(950, 648)
+            };
+            Point[] max = {
+                new Point(1211, 253),
+                new Point(1210, 467),
+                new Point(1210, 681)
+            };
+
+            int x = (int)Math.Round(adjustWidth * random.Next(min[moduloID].X, max[moduloID].X));
+            int y = (int)Math.Round(adjustHeight * random.Next(min[moduloID].Y, max[moduloID].Y));
+            yield return Timer_Touch(x, y, 0.5f);
         }
         #endregion
 
@@ -153,9 +232,15 @@ namespace KingdomManager
             "Y : " + clickPos.Y;
         }
 
+        private void OnApplicationClosing(object sender, FormClosingEventArgs e)
+        {
+            threadClose = true;
+        }
+
         private void OnTestButtonClicked(object sender, EventArgs e)
         {
-            CKP_Produce(2);
+            CKP_Produce(5);
+            //CKP_Scroll();
         }
         #endregion
 
@@ -193,24 +278,7 @@ namespace KingdomManager
             if (IsLinkValid() == false)
                 return;
 
-            IntPtr param = new IntPtr(x | (y << 16));
-            SendMessage(linkedHandle, WM_LBUTTONDOWN, 1, param);
-            if(duration == 0f)
-            {
-                SendMessage(linkedHandle, WM_LBUTTONUP, 0, param);
-            }
-            else
-            {
-                CoroutineManager.StartCoroutine(Timer_TouchEnd(duration, param));
-            }
-        }
-
-        public void TouchEnd(IntPtr param)
-        {
-            if (IsLinkValid() == false)
-                return;
-            
-            SendMessage(linkedHandle, WM_LBUTTONUP, 1, param);
+            CoroutineManager.StartCoroutine(Timer_Touch(x, y, duration));
         }
         #endregion
 
@@ -243,6 +311,21 @@ namespace KingdomManager
             isLinked = false;
             linkedHandle = IntPtr.Zero;
         }
+
+        public void RefreshSize()
+        {
+            Graphics graphics = Graphics.FromHwnd(linkedHandle);
+            if (graphics == null)
+                return;
+
+            linkedWidth = (int)Math.Round(graphics.VisibleClipBounds.Width);
+            linkedHeight = (int)Math.Round(graphics.VisibleClipBounds.Height);
+        }
+
+        private IntPtr CreateLParam(int LoWord, int HiWord)
+        {
+            return (IntPtr)((HiWord << 16) | (LoWord & 0xffff));
+        }
         #endregion
 
         #region 쿠킹덤 생산 함수
@@ -252,39 +335,7 @@ namespace KingdomManager
         /// <param name="id">1~3번째 품목 생산</param>
         private void CKP_Produce(int id)
         {
-            const int testerWidth = 1280;
-            const int testerHeight = 720;
-            float adjustWidth = (float)linkedWidth / testerWidth;
-            float adjustHeight = (float)linkedHeight / testerHeight;
-
-            Point min1 = new Point(949, 221);
-            Point max1 = new Point(1211, 253);
-            Point min2 = new Point(946, 430);
-            Point max2 = new Point(1210, 467);
-            Point min3 = new Point(950, 648);
-            Point max3 = new Point(1210, 681);
-
-            Random random = new Random();
-
-            switch (id)
-            {
-                case 1:
-                    break;
-                case 2:
-                    int x = (int)Math.Round(adjustWidth * random.Next(min2.X, max2.X));
-                    int y = (int)Math.Round(adjustHeight * random.Next(min2.Y, max2.Y));
-                    TouchScreen(x, y, 5);
-                    break;
-                case 3:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void CKP_Scroll()
-        {
-
+            CoroutineManager.StartCoroutine(Timer_Produce(id));
         }
         #endregion
     }
