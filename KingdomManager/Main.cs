@@ -68,40 +68,8 @@ namespace KingdomManager
 
         public bool threadClose;
 
-        class BitmapListData
-        {
-            Bitmap originalBitmap;
-            int originalWidth;
-            int originalHeight;
-            int screenWidth;
-            int screenHeight;
-            public Bitmap resultBitmap;
-            public int currentScreenWidth;
-            public int currentScreenHeight;
-
-            public BitmapListData(Bitmap bitmap, int width, int height)
-            {
-                originalBitmap = bitmap;
-                originalWidth = bitmap.Width;
-                originalHeight = bitmap.Height;
-                screenWidth = width;
-                screenHeight = height;
-                Resize(width, height);
-            }
-
-            public void Resize(int currentWidth, int currentHeight)
-            {
-                if (resultBitmap != null)
-                    resultBitmap.Dispose();
-
-                float resizeWidth = (float)currentWidth / screenWidth;
-                float resizeHeight = (float)currentHeight / screenHeight;
-
-                resultBitmap = ResizeImage(originalBitmap, (int)Math.Round(originalWidth * resizeWidth), (int)Math.Round(originalHeight * resizeHeight));
-                currentScreenWidth = currentWidth;
-                currentScreenHeight = currentHeight;
-            }
-        }
+        #region Class
+        #endregion
 
         Dictionary<string, BitmapListData> bitmapList;
         Bitmap currentScreen;
@@ -110,6 +78,8 @@ namespace KingdomManager
         public Main()
         {
             InitializeComponent();
+            InitializeItem();
+            InitializeProduct();
 
             #region Initialize
             #if DEBUG == false
@@ -153,6 +123,488 @@ namespace KingdomManager
                 }
             }
         }
+
+        #region Initialize
+        private void InitializeItem()
+        {
+            new Item("wood", "롤케이크 나무조각");
+            new Item("jellybean", "젤리빈");
+            new Item("sugar", "각설탕 조각");
+            new Item("biscuit", "비스킷 가루");
+            new Item("jellyberry", "젤리베리");
+            new Item("milk", "밀키우유");
+            new Item("cotton", "솜사탕 양털");
+
+            new Item("tool1", "단단 도끼");
+            new Item("tool2", "튼튼 곡괭이");
+            new Item("tool3", "슥삭슥삭 톱");
+            new Item("tool4", "푹푹 삽");
+            new Item("tool5", "신비한 프레첼 말뚝");
+            new Item("tool6", "영롱한 푸른사탕 집게");
+            new Item("tool7", "불변의 슈가 코팅 망치");
+
+            new Item("jam1", "젤리빈 잼");
+            new Item("jam2", "스윗젤리 잼");
+            new Item("jam3", "달고나 잼");
+            new Item("jam4", "석류 잼");
+            new Item("jam5", "톡톡베리 잼");
+
+            new Item("rollcake1", "솔방울새 인형");
+            new Item("rollcake2", "도토리 램프");
+            new Item("rollcake3", "뻐꾹뻐꾹 시계");
+            new Item("rollcake4", "백조깃털 드림캐쳐");
+
+            new Item("bread1", "든든한 호밀빵");
+            new Item("bread2", "달콤쫀득 잼파이");
+            new Item("bread3", "은행 포카치아");
+            new Item("bread4", "슈가코팅 도넛");
+            new Item("bread5", "폭신 카스테라");
+            new Item("bread6", "골드리치 크로와상");
+
+            new Item("restaurant1", "따끈따끈 젤리스튜");
+            new Item("restaurant2", "곰젤리 버거");
+            new Item("restaurant3", "캔디크림 파스타");
+            new Item("restaurant4", "폭신폭신 오므라이스");
+            new Item("restaurant5", "콤비네이션 피자젤리");
+            new Item("restaurant6", "고급스러운 젤리빈 정식");
+
+            new Item("pot1", "비스킷 화분");
+            new Item("pot2", "반짝반짝 유리판");
+            new Item("pot3", "반짝이는 색동구슬");
+            new Item("pot4", "무지갯빛 디저트 보울");
+
+            new Item("flower1", "캔디꽃");
+            new Item("flower2", "행복한 꽃화분");
+            new Item("flower3", "캔디꽃다발");
+            new Item("flower4", "롤리팝 꽃바구니");
+            new Item("flower5", "유리꽃 부케");
+            new Item("flower6", "찬란한 요거트 화환");
+
+            new Item("milk1", "크림");
+            new Item("milk2", "버터");
+            new Item("milk3", "수제 치즈");
+
+            new Item("latte1", "젤리빈 라떼");
+            new Item("latte2", "몽글몽글 버블티");
+            new Item("latte3", "스윗베리 에이드");
+
+            new Item("cotton1", "구름사탕 쿠션");
+            new Item("cotton2", "곰젤리 솜인형");
+            new Item("cotton3", "용과 드래곤 솜인형");
+
+            new Item("beer1", "크림 루트비어");
+            new Item("beer2", "레드베리 주스");
+            new Item("beer3", "빈티지 와일드 보틀");
+
+            new Item("cake1", "으스스 머핀");
+            new Item("cake2", "생딸기 케이크");
+            new Item("cake3", "파티파티 쉬폰케이크");
+
+            new Item("jewelry1", "글레이즈드 링");
+            new Item("jewelry2", "루비베리 브로치");
+            new Item("jewelry3", "로얄 곰젤리 크라운");
+        }
+        private void InitializeProduct()
+        {
+            #region 나무꾼의 집
+            Building building = new Building(1, "나무꾼의 집");
+            Product product = new Product(1, "롤케이크 나무조각", 30, 30, 3);
+            building.Add(product);
+            product = new Product(2, "롤케이크 나무 묶음", 360, 90, 9);
+            building.Add(product);
+            product = new Product(3, "롤케이크 나무 더미", 5400, 200, 20);
+            building.Add(product);
+            #endregion
+
+            #region 젤리빈 농장
+            building = new Building(2, "젤리빈 농장");
+            product = new Product(1, "젤리빈", 60, 50, 3);
+            building.Add(product);
+            product = new Product(2, "젤리빈 한 바구니", 720, 150, 9);
+            building.Add(product);
+            product = new Product(3, "젤리빈 한 상자", 6000, 340, 20);
+            building.Add(product);
+            #endregion
+
+            #region 각설탕 채석장
+            building = new Building(3, "각설탕 채석장");
+            product = new Product(1, "각설탕 조각", 90, 80, 3);
+            building.Add(product);
+            product = new Product(2, "각설탕 조각 뭉치", 1020, 240, 9);
+            building.Add(product);
+            product = new Product(3, "각설탕 조각 한 수레", 9000, 540, 20);
+            building.Add(product);
+            #endregion
+
+            #region 비스킷 풍차
+            building = new Building(4, "비스킷 풍차");
+            product = new Product(1, "비스킷 가루", 600, 200, 3);
+            building.Add(product);
+            product = new Product(2, "비스킷 가루 포대", 1500, 600, 9);
+            building.Add(product);
+            product = new Product(3, "비스킷 가루 수레", 7200, 1340, 20);
+            building.Add(product);
+            #endregion
+
+            #region 젤리베리 과수원
+            building = new Building(5, "젤리베리 과수원");
+            product = new Product(1, "젤리베리", 1080, 500, 3);
+            building.Add(product);
+            product = new Product(2, "젤리베리 바구니", 2400, 1500, 9);
+            building.Add(product);
+            product = new Product(3, "젤리베리 한 상자", 9000, 3000, 20);
+            building.Add(product);
+            #endregion
+
+            #region 우유 우물
+            building = new Building(6, "우유 우물");
+            product = new Product(1, "밀키 우유", 1680, 700, 2);
+            building.Add(product);
+            product = new Product(2, "밀키 우유 통", 7200, 1750, 5);
+            building.Add(product);
+            product = new Product(3, "밀키 우유 한 수레", 12600, 2800, 8);
+            building.Add(product);
+            #endregion
+
+            #region 솜사탕양 목장
+            building = new Building(7, "솜사탕양 목장");
+            product = new Product(1, "솜사탕 양털", 5400, 700, 1);
+            building.Add(product);
+            product = new Product(2, "솜사탕 양털 뭉치", 11100, 1750, 2);
+            building.Add(product);
+            product = new Product(3, "솜사탕 양털 상자", 17100, 2800, 3);
+            building.Add(product);
+            #endregion
+
+            #region 뚝딱 대장간
+            building = new Building(11, "뚝딱 대장간");
+
+            product = new Product(1, Item.list["tool1"].name, 30);
+            product.Add(Item.list["wood"], 2);
+            building.Add(product);
+
+            product = new Product(2, Item.list["tool2"].name, 180);
+            product.Add(Item.list["wood"], 3);
+            product.Add(Item.list["sugar"], 3);
+            building.Add(product);
+
+            product = new Product(3, Item.list["tool3"].name, 420);
+            product.Add(Item.list["wood"], 6);
+            product.Add(Item.list["sugar"], 5);
+            building.Add(product);
+
+            product = new Product(4, Item.list["tool4"].name, 900);
+            product.Add(Item.list["wood"], 10);
+            product.Add(Item.list["sugar"], 10);
+            building.Add(product);
+
+            product = new Product(5, Item.list["tool5"].name, 3600);
+            product.Add(Item.list["wood"], 15);
+            product.Add(Item.list["sugar"], 15);
+            building.Add(product);
+
+            product = new Product(6, Item.list["tool6"].name, 10800);
+            product.Add(Item.list["wood"], 22);
+            product.Add(Item.list["sugar"], 18);
+            building.Add(product);
+
+            product = new Product(7, Item.list["tool7"].name, 21600);
+            product.Add(Item.list["wood"], 30);
+            product.Add(Item.list["sugar"], 35);
+            building.Add(product);
+            #endregion
+
+            #region 설탕몽땅 잼가게
+            building = new Building(12, "설탕몽땅 잼가게");
+
+            product = new Product(1, Item.list["jam1"].name, 90);
+            product.Add(Item.list["jellybean"], 3);
+            building.Add(product);
+
+            product = new Product(2, Item.list["jam2"].name, 480);
+            product.Add(Item.list["jellybean"], 6);
+            building.Add(product);
+
+            product = new Product(3, Item.list["jam3"].name, 1200);
+            product.Add(Item.list["jellybean"], 6);
+            product.Add(Item.list["jellyberry"], 5);
+            building.Add(product);
+
+            product = new Product(4, Item.list["jam4"].name, 7200);
+            product.Add(Item.list["jellyberry"], 8);
+            product.Add(Item.list["latte1"], 1);
+            building.Add(product);
+
+            product = new Product(5, Item.list["jam5"].name, 21600);
+            product.Add(Item.list["jellybean"], 20);
+            product.Add(Item.list["cotton"], 3);
+            building.Add(product);
+            #endregion
+
+            #region 롤케이크 공작소
+            building = new Building(13, "롤케이크 공작소");
+
+            product = new Product(1, Item.list["rollcake1"].name, 300);
+            product.Add(Item.list["wood"], 6);
+            building.Add(product);
+
+            product = new Product(2, Item.list["rollcake2"].name, 1320);
+            product.Add(Item.list["wood"], 12);
+            product.Add(Item.list["jellyberry"], 3);
+            building.Add(product);
+
+            product = new Product(3, Item.list["rollcake3"].name, 7200);
+            product.Add(Item.list["biscuit"], 8);
+            product.Add(Item.list["jam3"], 3);
+            building.Add(product);
+
+            product = new Product(4, Item.list["rollcake4"].name, 12600);
+            product.Add(Item.list["cotton"], 1);
+            product.Add(Item.list["restaurant4"], 1);
+            building.Add(product);
+            #endregion
+
+            #region 갓 구운 빵집
+            building = new Building(14, "갓 구운 빵집");
+
+            product = new Product(1, Item.list["bread1"].name, 720);
+            product.Add(Item.list["jam1"], 1);
+            product.Add(Item.list["biscuit"], 2);
+            building.Add(product);
+
+            product = new Product(2, Item.list["bread2"].name, 1200);
+            product.Add(Item.list["jellybean"], 6);
+            product.Add(Item.list["biscuit"], 3);
+            building.Add(product);
+
+            product = new Product(3, Item.list["bread3"].name, 1800);
+            product.Add(Item.list["biscuit"], 6);
+            product.Add(Item.list["rollcake2"], 1);
+            building.Add(product);
+
+            product = new Product(4, Item.list["bread4"].name, 3600);
+            product.Add(Item.list["sugar"], 15);
+            product.Add(Item.list["pot2"], 1);
+            building.Add(product);
+
+            product = new Product(4, Item.list["bread5"].name, 10800);
+            product.Add(Item.list["sugar"], 25);
+            product.Add(Item.list["milk"], 8);
+            building.Add(product);
+
+            product = new Product(4, Item.list["bread6"].name, 21600);
+            product.Add(Item.list["milk"], 15);
+            product.Add(Item.list["milk2"], 1);
+            building.Add(product);
+            #endregion
+
+            #region 잼파이 레스토랑
+            building = new Building(15, "잼파이 레스토랑");
+
+            product = new Product(1, Item.list["restaurant1"].name, 1080);
+            product.Add(Item.list["jellybean"], 4);
+            product.Add(Item.list["jellyberry"], 1);
+            building.Add(product);
+
+            product = new Product(2, Item.list["restaurant2"].name, 1320);
+            product.Add(Item.list["jellybean"], 10);
+            product.Add(Item.list["bread2"], 1);
+            building.Add(product);
+
+            product = new Product(3, Item.list["restaurant3"].name, 3000);
+            product.Add(Item.list["biscuit"], 7);
+            product.Add(Item.list["milk1"], 1);
+            building.Add(product);
+
+            product = new Product(4, Item.list["restaurant4"].name, 5400);
+            product.Add(Item.list["jellyberry"], 6);
+            product.Add(Item.list["bread3"], 1);
+            building.Add(product);
+
+            product = new Product(4, Item.list["restaurant5"].name, 12600);
+            product.Add(Item.list["jellyberry"], 10);
+            product.Add(Item.list["flower1"], 4);
+            building.Add(product);
+
+            product = new Product(4, Item.list["restaurant6"].name, 25200);
+            product.Add(Item.list["jellybean"], 25);
+            product.Add(Item.list["flower4"], 4);
+            building.Add(product);
+            #endregion
+
+            #region 토닥토닥 도예공방
+            building = new Building(16, "토닥토닥 도예공방");
+
+            product = new Product(1, Item.list["pot1"].name, 900);
+            product.Add(Item.list["rollcake1"], 2);
+            product.Add(Item.list["biscuit"], 4);
+            building.Add(product);
+
+            product = new Product(2, Item.list["pot2"].name, 1620);
+            product.Add(Item.list["sugar"], 12);
+            product.Add(Item.list["restaurant1"], 1);
+            building.Add(product);
+
+            product = new Product(3, Item.list["pot3"].name, 7200);
+            product.Add(Item.list["restaurant2"], 1);
+            product.Add(Item.list["cotton"], 1);
+            building.Add(product);
+
+            product = new Product(4, Item.list["pot4"].name, 18000);
+            product.Add(Item.list["sugar"], 30);
+            product.Add(Item.list["bread3"], 1);
+            building.Add(product);
+            #endregion
+
+            #region 행복한 꽃가게
+            building = new Building(17, "행복한 꽃가게");
+
+            product = new Product(1, Item.list["flower1"].name, 1200);
+            product.Add(Item.list["jellyberry"], 2);
+            product.Add(Item.list["pot1"], 1);
+            building.Add(product);
+
+            product = new Product(2, Item.list["flower2"].name, 1800);
+            product.Add(Item.list["jellyberry"], 4);
+            product.Add(Item.list["sugar"], 10);
+            building.Add(product);
+
+            product = new Product(3, Item.list["flower3"].name, 3600);
+            product.Add(Item.list["jellyberry"], 5);
+            product.Add(Item.list["restaurant3"], 1);
+            building.Add(product);
+
+            product = new Product(4, Item.list["flower4"].name, 9000);
+            product.Add(Item.list["jellybean"], 18);
+            product.Add(Item.list["bread1"], 3);
+            building.Add(product);
+
+            product = new Product(4, Item.list["flower5"].name, 16200);
+            product.Add(Item.list["jellybean"], 20);
+            product.Add(Item.list["cotton1"], 2);
+            building.Add(product);
+
+            product = new Product(4, Item.list["flower6"].name, 27000);
+            product.Add(Item.list["jellybean"], 30);
+            product.Add(Item.list["restaurant5"], 4);
+            building.Add(product);
+            #endregion
+
+            #region 밀키 우유 가공소
+            building = new Building(18, "밀키 우유 가공소");
+
+            product = new Product(1, Item.list["milk1"].name, 1800);
+            product.Add(Item.list["jam2"], 1);
+            product.Add(Item.list["milk"], 2);
+            building.Add(product);
+
+            product = new Product(2, Item.list["milk2"].name, 9000);
+            product.Add(Item.list["sugar"], 15);
+            product.Add(Item.list["milk"], 5);
+            building.Add(product);
+
+            product = new Product(3, Item.list["milk3"].name, 16200);
+            product.Add(Item.list["milk"], 10);
+            product.Add(Item.list["rollcake3"], 1);
+            building.Add(product);
+            #endregion
+
+            #region 카페 라떼
+            building = new Building(19, "카페 라떼");
+
+            product = new Product(1, Item.list["latte1"].name, 3600);
+            product.Add(Item.list["jellybean"], 12);
+            product.Add(Item.list["milk"], 2);
+            building.Add(product);
+
+            product = new Product(2, Item.list["latte2"].name, 10800);
+            product.Add(Item.list["jellyberry"], 8);
+            product.Add(Item.list["bread4"], 1);
+            building.Add(product);
+
+            product = new Product(3, Item.list["latte3"].name, 23400);
+            product.Add(Item.list["jellyberry"], 12);
+            product.Add(Item.list["pot3"], 2);
+            building.Add(product);
+            #endregion
+
+            #region 러블리 인형공방
+            building = new Building(20, "러블리 인형공방");
+
+            product = new Product(1, Item.list["cotton1"].name, 5400);
+            product.Add(Item.list["biscuit"], 8);
+            product.Add(Item.list["cotton"], 1);
+            building.Add(product);
+
+            product = new Product(2, Item.list["cotton2"].name, 14400);
+            product.Add(Item.list["flower3"], 2);
+            product.Add(Item.list["cotton"], 1);
+            building.Add(product);
+
+            product = new Product(3, Item.list["cotton3"].name, 23400);
+            product.Add(Item.list["cotton"], 4);
+            product.Add(Item.list["beer1"], 2);
+            building.Add(product);
+            #endregion
+
+            #region 오크통 쉼터
+            building = new Building(21, "오크통 쉼터");
+
+            product = new Product(1, Item.list["beer1"].name, 9000);
+            product.Add(Item.list["biscuit"], 10);
+            product.Add(Item.list["flower2"], 1);
+            building.Add(product);
+
+            product = new Product(2, Item.list["beer2"].name, 23400);
+            product.Add(Item.list["jellyberry"], 14);
+            product.Add(Item.list["cotton2"], 2);
+            building.Add(product);
+
+            product = new Product(3, Item.list["beer3"].name, 28800);
+            product.Add(Item.list["wood"], 50);
+            product.Add(Item.list["cake1"], 4);
+            building.Add(product);
+            #endregion
+
+            #region 퐁 드 파티세리
+            building = new Building(22, "퐁 드 파티세리");
+
+            product = new Product(1, Item.list["cake1"].name, 12600);
+            product.Add(Item.list["biscuit"], 12);
+            product.Add(Item.list["milk"], 7);
+            building.Add(product);
+
+            product = new Product(2, Item.list["cake2"].name, 21600);
+            product.Add(Item.list["biscuit"], 14);
+            product.Add(Item.list["latte2"], 2);
+            building.Add(product);
+
+            product = new Product(3, Item.list["cake3"].name, 28800);
+            product.Add(Item.list["biscuit"], 18);
+            product.Add(Item.list["milk3"], 3);
+            building.Add(product);
+            #endregion
+
+            #region 살롱 드 쥬얼리
+            building = new Building(23, "살롱 드 쥬얼리");
+
+            product = new Product(1, Item.list["jewelry1"].name, 18000);
+            product.Add(Item.list["biscuit"], 12);
+            product.Add(Item.list["bread6"], 1);
+            building.Add(product);
+
+            product = new Product(2, Item.list["jewelry2"].name, 27000);
+            product.Add(Item.list["jellyberry"], 20);
+            product.Add(Item.list["rollcake4"], 3);
+            building.Add(product);
+
+            product = new Product(3, Item.list["jewelry3"].name, 28800);
+            product.Add(Item.list["cotton"], 4);
+            product.Add(Item.list["flower5"], 2);
+            building.Add(product);
+            #endregion
+        }
+        #endregion
 
         #region 타이머(코루틴)
         IEnumerator Timer_Start()
@@ -574,38 +1026,6 @@ namespace KingdomManager
         private IntPtr CreateLParam(int LoWord, int HiWord)
         {
             return (IntPtr)((HiWord << 16) | (LoWord & 0xffff));
-        }
-        
-        /// <summary>
-         /// Resize the image to the specified width and height.
-         /// </summary>
-         /// <param name="image">The image to resize.</param>
-         /// <param name="width">The width to resize to.</param>
-         /// <param name="height">The height to resize to.</param>
-         /// <returns>The resized image.</returns>
-        private static Bitmap ResizeImage(Image image, int width, int height)
-        {
-            var destRect = new Rectangle(0, 0, width, height);
-            var destImage = new Bitmap(width, height);
-
-            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
-
-            using (var graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new System.Drawing.Imaging.ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-            }
-
-            return destImage;
         }
 
         private Point? Find(Bitmap sourceBitmap, string keyword, double tolerance = 0.5)

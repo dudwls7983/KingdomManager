@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coroutine.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>

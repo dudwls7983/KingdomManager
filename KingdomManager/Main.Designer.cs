@@ -37,14 +37,27 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.produceTab = new System.Windows.Forms.TabPage();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.buildingLevel = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.buildingState = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.buildingList = new System.Windows.Forms.ListBox();
             this.developTab = new System.Windows.Forms.TabPage();
             this.testButton = new System.Windows.Forms.Button();
             this.devRefreshButton = new System.Windows.Forms.Button();
             this.devRichBox = new System.Windows.Forms.RichTextBox();
             this.devPictureBox = new System.Windows.Forms.PictureBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.min = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.max = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl.SuspendLayout();
             this.mainTab.SuspendLayout();
+            this.produceTab.SuspendLayout();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.developTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.devPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -137,13 +150,88 @@
             // 
             // produceTab
             // 
+            this.produceTab.BackColor = System.Drawing.SystemColors.Control;
+            this.produceTab.Controls.Add(this.panel1);
+            this.produceTab.Controls.Add(this.buildingList);
             this.produceTab.Location = new System.Drawing.Point(4, 22);
             this.produceTab.Name = "produceTab";
             this.produceTab.Padding = new System.Windows.Forms.Padding(3);
             this.produceTab.Size = new System.Drawing.Size(1552, 811);
             this.produceTab.TabIndex = 1;
             this.produceTab.Text = "생산";
-            this.produceTab.UseVisualStyleBackColor = true;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.dataGridView1);
+            this.panel1.Controls.Add(this.buildingLevel);
+            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.buildingState);
+            this.panel1.Controls.Add(this.label3);
+            this.panel1.Location = new System.Drawing.Point(388, 6);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(583, 376);
+            this.panel1.TabIndex = 1;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.name,
+            this.min,
+            this.max});
+            this.dataGridView1.Location = new System.Drawing.Point(193, 9);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.Size = new System.Drawing.Size(383, 364);
+            this.dataGridView1.TabIndex = 4;
+            // 
+            // buildingLevel
+            // 
+            this.buildingLevel.FormattingEnabled = true;
+            this.buildingLevel.Location = new System.Drawing.Point(66, 46);
+            this.buildingLevel.Name = "buildingLevel";
+            this.buildingLevel.Size = new System.Drawing.Size(121, 20);
+            this.buildingLevel.TabIndex = 3;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 49);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(29, 12);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "레벨";
+            // 
+            // buildingState
+            // 
+            this.buildingState.FormattingEnabled = true;
+            this.buildingState.Items.AddRange(new object[] {
+            "Normal",
+            "Upgrading",
+            "Not Yet"});
+            this.buildingState.Location = new System.Drawing.Point(66, 9);
+            this.buildingState.Name = "buildingState";
+            this.buildingState.Size = new System.Drawing.Size(121, 20);
+            this.buildingState.TabIndex = 1;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 12);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(29, 12);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "상태";
+            // 
+            // buildingList
+            // 
+            this.buildingList.BackColor = System.Drawing.SystemColors.Window;
+            this.buildingList.FormattingEnabled = true;
+            this.buildingList.ItemHeight = 12;
+            this.buildingList.Location = new System.Drawing.Point(6, 6);
+            this.buildingList.Name = "buildingList";
+            this.buildingList.Size = new System.Drawing.Size(376, 376);
+            this.buildingList.TabIndex = 0;
             // 
             // developTab
             // 
@@ -207,6 +295,28 @@
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // name
+            // 
+            this.name.FillWeight = 80F;
+            this.name.HeaderText = "아이템";
+            this.name.Name = "name";
+            this.name.ReadOnly = true;
+            this.name.Width = 80;
+            // 
+            // min
+            // 
+            this.min.FillWeight = 130F;
+            this.min.HeaderText = "최소 유지 개수";
+            this.min.Name = "min";
+            this.min.Width = 130;
+            // 
+            // max
+            // 
+            this.max.FillWeight = 130F;
+            this.max.HeaderText = "최대 유지 개수";
+            this.max.Name = "max";
+            this.max.Width = 130;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -219,6 +329,10 @@
             this.tabControl.ResumeLayout(false);
             this.mainTab.ResumeLayout(false);
             this.mainTab.PerformLayout();
+            this.produceTab.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.developTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.devPictureBox)).EndInit();
             this.ResumeLayout(false);
@@ -241,6 +355,16 @@
         private System.Windows.Forms.PictureBox devPictureBox;
         private System.Windows.Forms.Button testButton;
         private System.Windows.Forms.Button startButton;
+        private System.Windows.Forms.ListBox buildingList;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ComboBox buildingState;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox buildingLevel;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn name;
+        private System.Windows.Forms.DataGridViewTextBoxColumn min;
+        private System.Windows.Forms.DataGridViewTextBoxColumn max;
     }
 }
 
