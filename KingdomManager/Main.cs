@@ -112,6 +112,44 @@ namespace KingdomManager
                 bitmapList.Add(fileName, data);
             }
             #endregion
+
+            #region 빌딩 리스트 추가
+            Settings_Building.Load();
+            new Settings_Building(buildingList, "나무꾼의 집#1", Building.list[1], 3);
+            new Settings_Building(buildingList, "나무꾼의 집#2", Building.list[1], 3);
+            new Settings_Building(buildingList, "젤리빈 농장#1", Building.list[2], 3);
+            new Settings_Building(buildingList, "젤리빈 농장#2", Building.list[2], 3);
+            new Settings_Building(buildingList, "각설탕 채석장#1", Building.list[3], 3);
+            new Settings_Building(buildingList, "각설탕 채석장#2", Building.list[3], 3);
+            new Settings_Building(buildingList, "비스킷 풍차#1", Building.list[4], 3);
+            new Settings_Building(buildingList, "비스킷 풍차#2", Building.list[4], 3);
+            new Settings_Building(buildingList, "젤리베리 과수원#1", Building.list[5], 3);
+            new Settings_Building(buildingList, "젤리베리 과수원#2", Building.list[5], 3);
+            new Settings_Building(buildingList, "우유 우물#1", Building.list[6], 3);
+            new Settings_Building(buildingList, "우유 우물#2", Building.list[6], 3);
+            new Settings_Building(buildingList, "솜사탕양 목장#1", Building.list[7], 3);
+            new Settings_Building(buildingList, "솜사탕양 목장#2", Building.list[7], 3);
+            new Settings_Building(buildingList, "뚝딱 대장간#1", Building.list[11], 7);
+            new Settings_Building(buildingList, "뚝딱 대장간#2", Building.list[11], 7);
+            new Settings_Building(buildingList, "설탕몽땅 잼가게#1", Building.list[12], 5);
+            new Settings_Building(buildingList, "설탕몽땅 잼가게#2", Building.list[12], 5);
+            new Settings_Building(buildingList, "롤케이크 공작소#1", Building.list[13], 4);
+            new Settings_Building(buildingList, "롤케이크 공작소#2", Building.list[13], 4);
+            new Settings_Building(buildingList, "갓 구운 빵집#1", Building.list[14], 6);
+            new Settings_Building(buildingList, "갓 구운 빵집#2", Building.list[14], 6);
+            new Settings_Building(buildingList, "잼파이 레스토랑#1", Building.list[15], 6);
+            new Settings_Building(buildingList, "잼파이 레스토랑#2", Building.list[15], 6);
+            new Settings_Building(buildingList, "토닥토닥 도예공방#1", Building.list[16], 4);
+            new Settings_Building(buildingList, "토닥토닥 도예공방#2", Building.list[16], 4);
+            new Settings_Building(buildingList, "행복한 꽃가게#1", Building.list[17], 6);
+            new Settings_Building(buildingList, "행복한 꽃가게#2", Building.list[17], 6);
+            new Settings_Building(buildingList, "밀키 우유 가공소", Building.list[18], 3);
+            new Settings_Building(buildingList, "카페 라떼", Building.list[19], 3);
+            new Settings_Building(buildingList, "러블리 인형공방", Building.list[20], 3);
+            new Settings_Building(buildingList, "오크통 쉼터", Building.list[21], 3);
+            new Settings_Building(buildingList, "퐁 트 파티세리", Building.list[22], 3);
+            new Settings_Building(buildingList, "살롱 드 쥬얼리", Building.list[23], 3);
+            #endregion
         }
         public void Run()
         {
@@ -208,6 +246,7 @@ namespace KingdomManager
         {
             #region 나무꾼의 집
             Building building = new Building(1, "나무꾼의 집");
+
             Product product = new Product(1, "롤케이크 나무조각", 30, 30, 3);
             building.Add(product);
             product = new Product(2, "롤케이크 나무 묶음", 360, 90, 9);
@@ -218,6 +257,7 @@ namespace KingdomManager
 
             #region 젤리빈 농장
             building = new Building(2, "젤리빈 농장");
+
             product = new Product(1, "젤리빈", 60, 50, 3);
             building.Add(product);
             product = new Product(2, "젤리빈 한 바구니", 720, 150, 9);
@@ -228,6 +268,7 @@ namespace KingdomManager
 
             #region 각설탕 채석장
             building = new Building(3, "각설탕 채석장");
+
             product = new Product(1, "각설탕 조각", 90, 80, 3);
             building.Add(product);
             product = new Product(2, "각설탕 조각 뭉치", 1020, 240, 9);
@@ -238,6 +279,7 @@ namespace KingdomManager
 
             #region 비스킷 풍차
             building = new Building(4, "비스킷 풍차");
+
             product = new Product(1, "비스킷 가루", 600, 200, 3);
             building.Add(product);
             product = new Product(2, "비스킷 가루 포대", 1500, 600, 9);
@@ -248,6 +290,7 @@ namespace KingdomManager
 
             #region 젤리베리 과수원
             building = new Building(5, "젤리베리 과수원");
+
             product = new Product(1, "젤리베리", 1080, 500, 3);
             building.Add(product);
             product = new Product(2, "젤리베리 바구니", 2400, 1500, 9);
@@ -258,6 +301,7 @@ namespace KingdomManager
 
             #region 우유 우물
             building = new Building(6, "우유 우물");
+
             product = new Product(1, "밀키 우유", 1680, 700, 2);
             building.Add(product);
             product = new Product(2, "밀키 우유 통", 7200, 1750, 5);
@@ -268,6 +312,7 @@ namespace KingdomManager
 
             #region 솜사탕양 목장
             building = new Building(7, "솜사탕양 목장");
+
             product = new Product(1, "솜사탕 양털", 5400, 700, 1);
             building.Add(product);
             product = new Product(2, "솜사탕 양털 뭉치", 11100, 1750, 2);
@@ -613,9 +658,11 @@ namespace KingdomManager
             {
                 GetCurrentScreen();
 
+                // 메인화면인지 체크
                 Point? point = Find(currentScreen, "Icon_KingdomPass", 0.1);
                 if (point == null)
                 {
+                    // 메인화면 갈 때까지 ESC 반복
                     PressKey(Keys.Escape);
                     yield return new WaitForSeconds(1);
                     continue;
@@ -635,6 +682,8 @@ namespace KingdomManager
                 float adjustWidth = (float)linkedWidth / testerWidth;
                 float adjustHeight = (float)linkedHeight / testerHeight;
 
+
+                // 도끼 찾을 때까지 스크롤 내리기
                 GetCurrentScreen();
                 point = Find(currentScreen, "Store_Axe", 0.5);
                 while (point == null)
@@ -649,13 +698,18 @@ namespace KingdomManager
                     GetCurrentScreen();
                     point = Find(currentScreen, "Store_Axe", 0.4);
                 }
+
+                // 도끼를 찾았으면 클릭
                 TouchScreen(point.Value.X, point.Value.Y);
                 yield return new WaitForSeconds(1f);
 
+
+                // 나무가 있으면 올바른 클릭
                 GetCurrentScreen();
                 point = Find(currentScreen, "Info_Wood", 0.3);
                 while (point == null)
                 {
+                    // 없으면 뒤로가기
                     PressKey(Keys.Escape);
                     yield return new WaitForSeconds(1);
                     continue;
@@ -663,6 +717,7 @@ namespace KingdomManager
                 TouchScreen(point.Value.X, point.Value.Y);
                 yield return new WaitForSeconds(1f);
 
+                // 나무가 있으면 생산으로 이동
                 GetCurrentScreen();
                 point = Find(currentScreen, "Icon_Goto", 0.3);
                 while (point == null)
@@ -673,26 +728,49 @@ namespace KingdomManager
                 }
                 TouchScreen(point.Value.X, point.Value.Y);
                 yield return new WaitForSeconds(2f);
-
+                
                 GetCurrentScreen();
                 point = Find(currentScreen, "Building_Wood", 0.3);
-                if (point == null)
+                if (point == null) // 생산 건물에 못 들어간 경우
                 {
                     TouchScreen(currentScreen.Width / 2, currentScreen.Height / 2);
-                }
-                else
-                {
-                    TouchScreen(point.Value.X, point.Value.Y);
                 }
                 yield return new WaitForSeconds(1f);
                 yield return Timer_Previous();
                 yield return new WaitForSeconds(1f);
 
-                // 생산 시작!~
-                //yield return Timer_Produce(생산할 아이디);
-                //yield return new WaitForSeconds(1f);
-                //yield return Timer_Next();
-                //yield return new WaitForSeconds(1f);
+                // 순환하며 재고 파악
+                var buildings = Settings_Building.buildings;
+                for (int i = 0; i < buildingList.Items.Count; i++)
+                {
+                    var building = buildings[buildingList.Items[i].ToString()];
+                    if (building.State != 0)
+                        continue;
+
+                    // 재고 파악
+                }
+
+                for (int i = 0; i < buildingList.Items.Count; i++)
+                {
+                    var building = buildings[buildingList.Items[i].ToString()];
+                    if (building.State != 0)
+                        continue;
+
+                    if (building.products.Count == 0)
+                    {
+                        yield return Timer_Next();
+                        yield return new WaitForSeconds(1f);
+                        continue;
+                    }
+
+                    yield return Timer_Produce(building.products[0].ID);
+                    yield return new WaitForSeconds(1f);
+                    yield return Timer_Next();
+                    yield return new WaitForSeconds(1f);
+                }
+
+                PressKey(Keys.Escape);
+                yield return new WaitForSeconds(1);
 
                 // 고기젤리 확인
                 // 열기구 남은 시간 확인
@@ -747,8 +825,7 @@ namespace KingdomManager
         {
             if (IsLinkValid() == false)
                 yield break;
-
-            id--;
+            
             int scrollCount = id / 3;
 
             Random random = new Random();
@@ -914,10 +991,169 @@ namespace KingdomManager
             }
         }
 
+        private void OnBuildingListSelectionChanged(object sender, EventArgs e)
+        {
+            string item = buildingList.SelectedItem?.ToString();
+            if (item == null)
+                return;
+
+            var building = Settings_Building.buildings[item];
+            if (building == null)
+                return;
+
+            buildingState.SelectedIndex = building.State;
+            buildingLevel.Items.Clear();
+            for (int i = 1; i <= building.MaxLevel; i++)
+            {
+                buildingLevel.Items.Add(i.ToString());
+            }
+            #region 생산품 로드
+            buildingProducts.Rows.Clear();
+            for (int i = 0; i < building.products.Count; i++)
+            {
+                var product = building.products[i];
+                DataGridViewComboBoxCell cell = new DataGridViewComboBoxCell();
+                cell.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
+
+                for (int j = 0; j < building.building.products.Count; j++)
+                {
+                    cell.Items.Add(building.building.products[j].name);
+                }
+                cell.Value = cell.Items[product.ID];
+
+                int row = buildingProducts.Rows.Add(null, product.Min, product.Max);
+                buildingProducts.Rows[row].Cells[0] = cell;
+            }
+            #endregion
+
+            buildingLevel.SelectedIndex = building.Level;
+        }
+
+        private void OnAddProductButtonClicked(object sender, EventArgs e)
+        {
+            string item = buildingList.SelectedItem?.ToString();
+            if (item == null)
+                return;
+
+            var building = Settings_Building.buildings[item];
+            if (building == null)
+                return;
+
+            DataGridViewComboBoxCell cell = new DataGridViewComboBoxCell();
+            cell.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
+
+            for (int i = 0; i < building.building.products.Count; i++)
+            {
+                cell.Items.Add(building.building.products[i].name);
+            }
+            cell.Value = cell.Items[0];
+
+            int row = buildingProducts.Rows.Add(null, 20, 50);
+            buildingProducts.Rows[row].Cells[0] = cell;
+
+            var product = new Settings_Product();
+            product.ID = 0;
+            product.Min = 20;
+            product.Max = 50;
+            building.products.Add(product);
+            Settings_Building.Save();
+        }
+
+        private void OnRemoveProductButtonClicked(object sender, EventArgs e)
+        {
+            string item = buildingList.SelectedItem?.ToString();
+            if (item == null)
+                return;
+
+            var building = Settings_Building.buildings[item];
+            if (building == null)
+                return;
+
+            var cell = buildingProducts.CurrentCell;
+            if (cell == null)
+                return;
+            
+            for (int i = 0; i < building.products.Count; i++)
+            {
+                if((int)cell.OwningRow.Cells[0].Value == building.products[i].ID)
+                {
+                    building.products.Remove(building.products[i]);
+                }
+            }
+            buildingProducts.Rows.Remove(cell.OwningRow);
+            Settings_Building.Save();
+        }
+
         private void OnTestButtonClicked(object sender, EventArgs e)
         {
             CKP_Produce(5);
             //CKP_Scroll();
+        }
+
+        private void OnBuildingProductsCellEditEnded(object sender, DataGridViewCellEventArgs e)
+        {
+            string item = buildingList.SelectedItem?.ToString();
+            if (item == null)
+                return;
+
+            var building = Settings_Building.buildings[item];
+            if (building == null)
+                return;
+
+            var cell = buildingProducts.CurrentCell;
+            if (cell == null)
+                return;
+
+            switch (e.ColumnIndex)
+            {
+                case 0:
+                    var combo = (DataGridViewComboBoxCell)(buildingProducts.Rows[e.RowIndex].Cells[0]);
+                    building.products[e.RowIndex].ID = combo.Items.IndexOf(combo.Value);
+                    break;
+                case 1:
+                    building.products[e.RowIndex].Min = int.Parse(buildingProducts.Rows[e.RowIndex].Cells[1].Value.ToString());
+                    break;
+                case 2:
+                    building.products[e.RowIndex].Max = int.Parse(buildingProducts.Rows[e.RowIndex].Cells[2].Value.ToString());
+                    break;
+                default:
+                    break;
+            }
+            
+            Settings_Building.Save();
+        }
+
+        private void OnBuildingProductsDataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
+        private void OnBuildingStateSelectionChanged(object sender, EventArgs e)
+        {
+            string item = buildingList.SelectedItem?.ToString();
+            if (item == null)
+                return;
+
+            var building = Settings_Building.buildings[item];
+            if (building == null)
+                return;
+
+            building.State = buildingState.SelectedIndex;
+            Settings_Building.Save();
+        }
+
+        private void OnBuildingLevelSelectionChanged(object sender, EventArgs e)
+        {
+            string item = buildingList.SelectedItem?.ToString();
+            if (item == null)
+                return;
+
+            var building = Settings_Building.buildings[item];
+            if (building == null)
+                return;
+
+            building.Level = buildingLevel.SelectedIndex;
+            Settings_Building.Save();
         }
         #endregion
 

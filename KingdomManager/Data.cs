@@ -12,6 +12,7 @@ namespace KingdomManager
     {
         public string name;
         public string key;
+        public int count;
 
         public static Dictionary<string, Item> list = new Dictionary<string, Item>();
 
@@ -19,6 +20,7 @@ namespace KingdomManager
         {
             name = _name;
             list.Add(_key, this);
+            count = 0;
         }
     }
 
@@ -52,12 +54,14 @@ namespace KingdomManager
         public int id;
         public string name;
         public List<Product> products;
+        public static Dictionary<int, Building> list = new Dictionary<int, Building>();
 
         public Building(int _id, string _name)
         {
             id = _id;
             name = _name;
             products = new List<Product>();
+            list.Add(id, this);
         }
 
         public void Add(Product product)

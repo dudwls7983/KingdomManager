@@ -38,7 +38,14 @@
             this.label1 = new System.Windows.Forms.Label();
             this.produceTab = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.removeProductionButton = new System.Windows.Forms.Button();
+            this.productUpButton = new System.Windows.Forms.Button();
+            this.productDownButton = new System.Windows.Forms.Button();
+            this.addProductButton = new System.Windows.Forms.Button();
+            this.buildingProducts = new System.Windows.Forms.DataGridView();
+            this.name = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.min = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.max = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.buildingLevel = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.buildingState = new System.Windows.Forms.ComboBox();
@@ -50,14 +57,11 @@
             this.devRichBox = new System.Windows.Forms.RichTextBox();
             this.devPictureBox = new System.Windows.Forms.PictureBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.min = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.max = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControl.SuspendLayout();
             this.mainTab.SuspendLayout();
             this.produceTab.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.buildingProducts)).BeginInit();
             this.developTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.devPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -162,7 +166,11 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.dataGridView1);
+            this.panel1.Controls.Add(this.removeProductionButton);
+            this.panel1.Controls.Add(this.productUpButton);
+            this.panel1.Controls.Add(this.productDownButton);
+            this.panel1.Controls.Add(this.addProductButton);
+            this.panel1.Controls.Add(this.buildingProducts);
             this.panel1.Controls.Add(this.buildingLevel);
             this.panel1.Controls.Add(this.label4);
             this.panel1.Controls.Add(this.buildingState);
@@ -172,26 +180,99 @@
             this.panel1.Size = new System.Drawing.Size(583, 376);
             this.panel1.TabIndex = 1;
             // 
-            // dataGridView1
+            // removeProductionButton
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.removeProductionButton.Location = new System.Drawing.Point(112, 246);
+            this.removeProductionButton.Name = "removeProductionButton";
+            this.removeProductionButton.Size = new System.Drawing.Size(75, 30);
+            this.removeProductionButton.TabIndex = 9;
+            this.removeProductionButton.Text = "제거";
+            this.removeProductionButton.UseVisualStyleBackColor = true;
+            this.removeProductionButton.Click += new System.EventHandler(this.OnRemoveProductButtonClicked);
+            // 
+            // productUpButton
+            // 
+            this.productUpButton.Location = new System.Drawing.Point(112, 72);
+            this.productUpButton.Name = "productUpButton";
+            this.productUpButton.Size = new System.Drawing.Size(75, 30);
+            this.productUpButton.TabIndex = 8;
+            this.productUpButton.Text = "▲";
+            this.productUpButton.UseVisualStyleBackColor = true;
+            // 
+            // productDownButton
+            // 
+            this.productDownButton.Location = new System.Drawing.Point(112, 144);
+            this.productDownButton.Name = "productDownButton";
+            this.productDownButton.Size = new System.Drawing.Size(75, 30);
+            this.productDownButton.TabIndex = 7;
+            this.productDownButton.Text = "▼";
+            this.productDownButton.UseVisualStyleBackColor = true;
+            // 
+            // addProductButton
+            // 
+            this.addProductButton.Location = new System.Drawing.Point(112, 108);
+            this.addProductButton.Name = "addProductButton";
+            this.addProductButton.Size = new System.Drawing.Size(75, 30);
+            this.addProductButton.TabIndex = 5;
+            this.addProductButton.Text = "추가";
+            this.addProductButton.UseVisualStyleBackColor = true;
+            this.addProductButton.Click += new System.EventHandler(this.OnAddProductButtonClicked);
+            // 
+            // buildingProducts
+            // 
+            this.buildingProducts.AllowUserToAddRows = false;
+            this.buildingProducts.AllowUserToDeleteRows = false;
+            this.buildingProducts.AllowUserToResizeColumns = false;
+            this.buildingProducts.AllowUserToResizeRows = false;
+            this.buildingProducts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.buildingProducts.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.name,
             this.min,
             this.max});
-            this.dataGridView1.Location = new System.Drawing.Point(193, 9);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(383, 364);
-            this.dataGridView1.TabIndex = 4;
+            this.buildingProducts.Location = new System.Drawing.Point(193, 9);
+            this.buildingProducts.MultiSelect = false;
+            this.buildingProducts.Name = "buildingProducts";
+            this.buildingProducts.RowTemplate.Height = 23;
+            this.buildingProducts.Size = new System.Drawing.Size(383, 364);
+            this.buildingProducts.TabIndex = 4;
+            this.buildingProducts.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnBuildingProductsCellEditEnded);
+            this.buildingProducts.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.OnBuildingProductsDataError);
+            // 
+            // name
+            // 
+            this.name.FillWeight = 80F;
+            this.name.HeaderText = "아이템";
+            this.name.Name = "name";
+            this.name.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.name.Width = 80;
+            // 
+            // min
+            // 
+            this.min.FillWeight = 130F;
+            this.min.HeaderText = "최소 유지 개수";
+            this.min.Name = "min";
+            this.min.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.min.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.min.Width = 130;
+            // 
+            // max
+            // 
+            this.max.FillWeight = 130F;
+            this.max.HeaderText = "최대 유지 개수";
+            this.max.Name = "max";
+            this.max.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.max.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.max.Width = 130;
             // 
             // buildingLevel
             // 
+            this.buildingLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.buildingLevel.FormattingEnabled = true;
             this.buildingLevel.Location = new System.Drawing.Point(66, 46);
             this.buildingLevel.Name = "buildingLevel";
             this.buildingLevel.Size = new System.Drawing.Size(121, 20);
             this.buildingLevel.TabIndex = 3;
+            this.buildingLevel.SelectedIndexChanged += new System.EventHandler(this.OnBuildingLevelSelectionChanged);
             // 
             // label4
             // 
@@ -204,6 +285,7 @@
             // 
             // buildingState
             // 
+            this.buildingState.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.buildingState.FormattingEnabled = true;
             this.buildingState.Items.AddRange(new object[] {
             "Normal",
@@ -213,6 +295,7 @@
             this.buildingState.Name = "buildingState";
             this.buildingState.Size = new System.Drawing.Size(121, 20);
             this.buildingState.TabIndex = 1;
+            this.buildingState.SelectedIndexChanged += new System.EventHandler(this.OnBuildingStateSelectionChanged);
             // 
             // label3
             // 
@@ -232,6 +315,7 @@
             this.buildingList.Name = "buildingList";
             this.buildingList.Size = new System.Drawing.Size(376, 376);
             this.buildingList.TabIndex = 0;
+            this.buildingList.SelectedIndexChanged += new System.EventHandler(this.OnBuildingListSelectionChanged);
             // 
             // developTab
             // 
@@ -295,28 +379,6 @@
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // name
-            // 
-            this.name.FillWeight = 80F;
-            this.name.HeaderText = "아이템";
-            this.name.Name = "name";
-            this.name.ReadOnly = true;
-            this.name.Width = 80;
-            // 
-            // min
-            // 
-            this.min.FillWeight = 130F;
-            this.min.HeaderText = "최소 유지 개수";
-            this.min.Name = "min";
-            this.min.Width = 130;
-            // 
-            // max
-            // 
-            this.max.FillWeight = 130F;
-            this.max.HeaderText = "최대 유지 개수";
-            this.max.Name = "max";
-            this.max.Width = 130;
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -332,7 +394,7 @@
             this.produceTab.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.buildingProducts)).EndInit();
             this.developTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.devPictureBox)).EndInit();
             this.ResumeLayout(false);
@@ -361,8 +423,12 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox buildingLevel;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn name;
+        private System.Windows.Forms.DataGridView buildingProducts;
+        private System.Windows.Forms.Button productUpButton;
+        private System.Windows.Forms.Button productDownButton;
+        private System.Windows.Forms.Button addProductButton;
+        private System.Windows.Forms.Button removeProductionButton;
+        private System.Windows.Forms.DataGridViewComboBoxColumn name;
         private System.Windows.Forms.DataGridViewTextBoxColumn min;
         private System.Windows.Forms.DataGridViewTextBoxColumn max;
     }
