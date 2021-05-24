@@ -68,11 +68,10 @@ namespace KingdomManager
 
         public bool threadClose;
 
-        #region Class
-        #endregion
-
         Dictionary<string, BitmapListData> bitmapList;
         Bitmap currentScreen;
+
+        Dictionary<string, float> productResultList = new Dictionary<string, float>();
         #endregion
 
         public Main()
@@ -150,6 +149,8 @@ namespace KingdomManager
             new Settings_Building(buildingList, "퐁 트 파티세리", Building.list[22], 3);
             new Settings_Building(buildingList, "살롱 드 쥬얼리", Building.list[23], 3);
             #endregion
+
+            CKP_GetResult();
         }
         public void Run()
         {
@@ -656,6 +657,7 @@ namespace KingdomManager
         {
             while(isRunMacro)
             {
+                bool gotoMain = false;
                 GetCurrentScreen();
 
                 // 메인화면인지 체크
@@ -695,9 +697,22 @@ namespace KingdomManager
 
                     yield return Timer_Scroll(from.X, from.Y, to.X, to.Y, 0.5f);
                     yield return new WaitForSeconds(1f);
+
+                    // Store_Empty 체크
+                    GetCurrentScreen();
+                    point = Find(currentScreen, "Store_Empty", 0.1);
+                    if (point != null)
+                    {
+                        gotoMain = true;
+                        break;
+                    }
+
                     GetCurrentScreen();
                     point = Find(currentScreen, "Store_Axe", 0.4);
                 }
+
+                if (gotoMain)
+                    continue;
 
                 // 도끼를 찾았으면 클릭
                 TouchScreen(point.Value.X, point.Value.Y);
@@ -712,8 +727,12 @@ namespace KingdomManager
                     // 없으면 뒤로가기
                     PressKey(Keys.Escape);
                     yield return new WaitForSeconds(1);
-                    continue;
+                    gotoMain = true;
+                    break;
                 }
+                if (gotoMain)
+                    continue;
+
                 TouchScreen(point.Value.X, point.Value.Y);
                 yield return new WaitForSeconds(1f);
 
@@ -724,8 +743,12 @@ namespace KingdomManager
                 {
                     PressKey(Keys.Escape);
                     yield return new WaitForSeconds(1);
-                    continue;
+                    gotoMain = true;
+                    break;
                 }
+                if (gotoMain)
+                    continue;
+
                 TouchScreen(point.Value.X, point.Value.Y);
                 yield return new WaitForSeconds(2f);
                 
@@ -763,8 +786,28 @@ namespace KingdomManager
                         continue;
                     }
 
-                    yield return Timer_Produce(building.products[0].ID);
+                    // 생산
+                    yield return Timer_Produce(building.products[0].ID, building.MaxLevel);
                     yield return new WaitForSeconds(1f);
+
+                    // 재고 부족 확인
+                    GetCurrentScreen();
+                    point = Find(currentScreen, "Info_Need", 0.3);
+                    if(point != null)
+                    {
+                        PressKey(Keys.Escape);
+                        yield return new WaitForSeconds(1);
+                    }
+
+                    // 창고 확장 확인
+                    point = Find(currentScreen, "Info_Expand", 0.3);
+                    if (point != null)
+                    {
+                        PressKey(Keys.Escape);
+                        yield return new WaitForSeconds(1);
+                    }
+
+                    // 다음 생산 건물로 이동
                     yield return Timer_Next();
                     yield return new WaitForSeconds(1f);
                 }
@@ -821,7 +864,7 @@ namespace KingdomManager
             PostMessage(linkedHandle, WM_LBUTTONUP, 0, CreateLParam(toX, toY));
         }
 
-        IEnumerator Timer_Produce(int id)
+        IEnumerator Timer_Produce(int id, int maxLevel)
         {
             if (IsLinkValid() == false)
                 yield break;
@@ -842,7 +885,8 @@ namespace KingdomManager
                 yield return Timer_Scroll(from.X, from.Y, to.X, to.Y, 0.5f);
                 yield return new WaitForSeconds(0.5f);
             }
-            int moduloID = id % 3;
+            int space = maxLevel - (scrollCount * 3);
+            int moduloID = space < 3 ? (id - space) % 3 : id % 3;
 
             Point[] min = {
                 new Point(949, 221),
@@ -1035,9 +1079,10 @@ namespace KingdomManager
             if (item == null)
                 return;
 
-            var building = Settings_Building.buildings[item];
-            if (building == null)
+            if (Settings_Building.buildings.ContainsKey(item) == false)
                 return;
+
+            var building = Settings_Building.buildings[item];
 
             DataGridViewComboBoxCell cell = new DataGridViewComboBoxCell();
             cell.DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox;
@@ -1065,17 +1110,18 @@ namespace KingdomManager
             if (item == null)
                 return;
 
-            var building = Settings_Building.buildings[item];
-            if (building == null)
+            if (Settings_Building.buildings.ContainsKey(item) == false)
                 return;
 
+            var building = Settings_Building.buildings[item];
             var cell = buildingProducts.CurrentCell;
             if (cell == null)
                 return;
-            
+
+            var combo = (DataGridViewComboBoxCell)(cell.OwningRow.Cells[0]);
             for (int i = 0; i < building.products.Count; i++)
             {
-                if((int)cell.OwningRow.Cells[0].Value == building.products[i].ID)
+                if(combo.Items.IndexOf(combo.Value) == building.products[i].ID)
                 {
                     building.products.Remove(building.products[i]);
                 }
@@ -1086,7 +1132,6 @@ namespace KingdomManager
 
         private void OnTestButtonClicked(object sender, EventArgs e)
         {
-            CKP_Produce(5);
             //CKP_Scroll();
         }
 
@@ -1119,7 +1164,8 @@ namespace KingdomManager
                 default:
                     break;
             }
-            
+
+            CKP_GetResult();
             Settings_Building.Save();
         }
 
@@ -1381,14 +1427,6 @@ namespace KingdomManager
         #endregion
 
         #region 쿠킹덤 생산 함수
-        /// <summary>
-        /// Cookierun Kingdom Produce - 생산
-        /// </summary>
-        /// <param name="id">1~3번째 품목 생산</param>
-        private void CKP_Produce(int id)
-        {
-            CoroutineManager.StartCoroutine(Timer_Produce(id));
-        }
 
         private void CKP_PreviousBuilding()
         {
@@ -1398,6 +1436,65 @@ namespace KingdomManager
         private void CKP_NextBuilding()
         {
             CoroutineManager.StartCoroutine(Timer_Next());
+        }
+
+        private void CKP_GetResult()
+        {
+            productResultList.Clear();
+            foreach (string item in buildingList.Items)
+            {
+                if (item == null)
+                    continue;
+
+                if (Settings_Building.buildings.ContainsKey(item) == false)
+                    continue;
+
+                var building = Settings_Building.buildings[item];
+                if (building.products.Count == 0)
+                    continue;
+
+                // 업그레이드 중이거나 짓지 않은 건물은 제외
+                if (building.State != 0)
+                    continue;
+
+                var productID = building.products[0].ID;
+                var product = building.building.products[productID];
+
+
+                string name = product.name;
+                if (building.building.id < 10)
+                {
+                    name = building.building.products[0].name;
+                }
+                float value = (float)product.count / product.time * 3600f;
+                if (productResultList.ContainsKey(name))
+                    productResultList[name] += value;
+                else
+                    productResultList.Add(name, value);
+
+                foreach (var material in product.materials)
+                {
+                    name = material.Item1.name;
+                    value = (float)material.Item2 / product.time * -3600f;
+
+                    if (productResultList.ContainsKey(name))
+                        productResultList[name] += value;
+                    else
+                        productResultList.Add(name, value);
+                }
+            }
+
+            productResult1.Text = productResult2.Text = string.Empty;
+            int whichTextbox = 0;
+            foreach (var result in productResultList)
+            {
+                whichTextbox = (whichTextbox + 1) & 1;
+                string text = result.Key + " : " + Math.Round(result.Value, 1) + Environment.NewLine;
+                if (whichTextbox == 1)
+                    productResult1.Text += text;
+                else
+                    productResult2.Text += text;
+            }
         }
         #endregion
     }
